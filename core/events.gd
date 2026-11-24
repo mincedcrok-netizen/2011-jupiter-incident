@@ -23,3 +23,10 @@ const SAVE_COMPLETED := &"save_completed"
 const LOAD_COMPLETED := &"load_completed"
 ## {section: String, key: String, value: Variant}
 const SETTINGS_CHANGED := &"settings_changed"
+
+## {state: String, previous: String}
+const GAME_STATE_CHANGED := &"game_state_changed"
+const GAME_PAUSED := &"game_paused"
+const GAME_RESUMED := &"game_resumed"
+## {context: String, message: String, severity: String}
+const ERROR_REPORTED := &"error_reported"

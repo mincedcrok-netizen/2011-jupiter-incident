@@ -24,20 +24,7 @@ func _ready() -> void:
 	camera.current = local
 	if local:
 		player_input.interact_pressed.connect(interactor.interact)
-		if DisplayServer.get_name() != "headless":
-			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	PlayerRegistry.register(self, peer_id, actor_id)
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if not is_locally_controlled():
-		return
-	if event.is_action_pressed(InputActions.RELEASE_MOUSE):
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	elif event is InputEventMouseButton and event.pressed \
-			and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED \
-			and DisplayServer.get_name() != "headless":
-		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 
 func _physics_process(delta: float) -> void:

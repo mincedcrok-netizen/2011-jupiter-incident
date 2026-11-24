@@ -30,7 +30,7 @@ func used_flag_key() -> StringName:
 func is_available_to(_actor: Actor) -> bool:
 	if not enabled or interaction_id == &"":
 		return false
-	if one_shot and GameState.get_flag(used_flag_key(), false):
+	if one_shot and GameState.is_flag_true(used_flag_key()):
 		return false
 	return true
 

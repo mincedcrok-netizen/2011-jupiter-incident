@@ -1,0 +1,18 @@
+[
+	{
+		"id": "test_recording_cassette",
+		"kind": "cassette",
+		"canon": "test",
+		"title": "TEST FIXTURE cassette",
+		"body": "Not canon. Exercises the data pipeline.",
+		"author": "test_speaker_a"
+	},
+	{
+		"id": "test_recording_locked",
+		"kind": "black_box",
+		"canon": "test",
+		"title": "TEST FIXTURE gated transcript",
+		"body": "Not canon. Requires a flag.",
+		"requires": ["test_gate"]
+	}
+]

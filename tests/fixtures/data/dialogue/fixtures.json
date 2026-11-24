@@ -1,0 +1,11 @@
+[
+	{
+		"id": "test_dialogue_basic",
+		"canon": "test",
+		"lines": [
+			{"speaker": "test_speaker_a", "text": "TEST FIXTURE: always available."},
+			{"speaker": "test_speaker_b", "text": "TEST FIXTURE: needs flag.", "requires": ["test_flag"]},
+			{"speaker": "test_speaker_a", "text": "TEST FIXTURE: hidden once flag set.", "excludes": ["test_flag"]}
+		]
+	}
+]

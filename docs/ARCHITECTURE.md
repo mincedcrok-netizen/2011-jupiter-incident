@@ -4,15 +4,35 @@ Engine: **Godot 4.4.x**, GDScript. Target: Windows PC first; single-player first
 co-op later. Platform-specific code will live in `platform/` (not created yet).
 
 ## Layout
+Deliberately feature-first rather than the suggested `scripts/` mirror tree: each system's
+script sits next to its scene/data, which keeps related files together and scripts small.
 | Path | Purpose |
 |---|---|
-| `core/` | Engine-agnostic services (autoloads): EventBus, Net, SaveSystem, GameState, Settings, SceneManager; plus `Events`, `InputActions`, `PhysicsLayers` |
-| `gameplay/` | Actors, player controller, interaction, PlayerRegistry |
-| `scenes/` | `boot.tscn` entry; `scenes/test/` holds the **foundation test room (harness only, not the Phase 3 ship environment)** |
-| `tests/` | Headless test suites. `tools/run_tests.sh` runs them |
-| `docs/` | This file and the development log |
+| `core/` | Autoload services: EventBus, Net, SaveSystem, GameState, GameManager, Settings, SceneManager; plus `Events`, `InputActions`, `PhysicsLayers` |
+| `gameplay/` | Actors, player controller + scene, interaction, PlayerRegistry |
+| `narrative/` | Dialogue/recording data classes, validation, `NarrativeDatabase` (data only; no runner/UI yet) |
+| `ui/` | HUD (crosshair + interaction prompt), pause menu |
+| `scenes/` | `boot.tscn` entry; `scenes/core/gameplay_scene.gd` (root script for playable scenes); `scenes/test/` = **foundation test room (harness only, not the Phase 3 ship)** |
+| `data/` | Shipped narrative JSON (`dialogue/`, `recordings/`): empty until Phase 2 content |
+| `assets/` | `models/ textures/ audio/ materials/` (empty; created for later phases) |
+| `tests/` | Headless suites, rendered end-to-end driver, two-process restart check, fixtures |
+| `tools/` | `run_tests.sh`, `run_e2e.sh`, `restart_check.sh` |
+| `docs/` | Architecture, data formats, development log |
 
-Autoload order matters: EventBus, Net, SaveSystem, GameState, Settings, SceneManager, PlayerRegistry.
+No `resources/` folder yet (nothing needs it). Autoload order matters: EventBus, Net,
+SaveSystem, GameState, GameManager, Settings, SceneManager, PlayerRegistry, NarrativeDatabase.
+
+## Game flow
+`boot.tscn` -> `SceneManager.change_scene(first_scene)` (on failure: on-screen message + error log)
+-> a scene whose root uses `GameplayScene` calls `GameManager.enter_gameplay()` (state PLAYING,
+mouse captured). Esc toggles pause (`tree.paused`, mouse released, pause menu shown); losing window
+focus pauses; leaving the scene while paused unpauses. `GameManager.report_error()` is the central
+non-fatal error log (capped, published as an event). Mouse capture policy lives only in GameManager.
+
+## Input
+Actions are registered in code (`InputActions`) and are rebindable with persistence
+(`Settings.set_binding`): invalid keys, unknown actions and keys already used by another action are refused.
+Defaults: WASD, Shift sprint, E interact, Esc pause. Mouse sensitivity and invert-Y are settings.
 
 ## Rules every system follows
 1. **No singletons for "the player".** Use `PlayerRegistry` (keyed by peer id). Enemies/hazards target via `PlayerRegistry.nearest_to()`.
@@ -28,6 +48,8 @@ Autoload order matters: EventBus, Net, SaveSystem, GameState, Settings, SceneMan
 | Saves (`SaveSystem`) | Authority | Host writes campaign saves |
 | Interactions (`Interactable`) | Authority performs | Remote requests are **not implemented** (Phase 7); they are refused with a warning |
 | Player movement/camera | The controlling peer | Remote players are not simulated locally |
+| Pause / mouse capture (`GameManager`) | Local | Co-op must not freeze the host's simulation; revisit in Phase 7 |
+| Narrative data (`NarrativeDatabase`) | Read-only everywhere | Unlocking recordings is authority-only (stored as flags) |
 | Settings | Local | Never replicated |
 | Scene changes | Local for now | Host-driven in Phase 7 |
 

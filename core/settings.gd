@@ -19,6 +19,7 @@ const DEFAULTS := {
 
 var config_path: String = DEFAULT_PATH  # overridable (tests)
 var _values: Dictionary = {}
+var _bindings: Dictionary = {}  # String action -> int physical keycode (user overrides only)
 
 
 func _ready() -> void:
@@ -52,10 +53,15 @@ func set_value(section: String, key: String, value: Variant) -> bool:
 
 func load_settings() -> Error:
 	_values = _defaults_copy()
+	_bindings.clear()
+	InputActions.reset_all_bindings()
 	var cfg := ConfigFile.new()
 	var err := cfg.load(config_path)
 	if err != OK:
+		if err != ERR_FILE_NOT_FOUND:
+			GameManager.report_error("settings", "Could not read %s (error %d); using defaults" % [config_path, err], "warning")
 		return err  # missing/corrupt file: defaults stay in effect
+	_load_bindings(cfg)
 	for section: String in DEFAULTS:
 		for key: String in DEFAULTS[section]:
 			if cfg.has_section_key(section, key):
@@ -63,8 +69,36 @@ func load_settings() -> Error:
 	return OK
 
 
+## Rebinds an action's key. Returns false (nothing changes) for unknown actions,
+## invalid keys, or keys already used by another action.
+func set_binding(action: StringName, keycode: int) -> bool:
+	if not InputActions.apply_binding(action, keycode):
+		return false
+	_bindings[String(action)] = keycode
+	EventBus.publish(Events.SETTINGS_CHANGED, {"section": "bindings", "key": String(action), "value": keycode})
+	return true
+
+
+func reset_bindings() -> void:
+	_bindings.clear()
+	InputActions.reset_all_bindings()
+
+
+func _load_bindings(cfg: ConfigFile) -> void:
+	if not cfg.has_section("bindings"):
+		return
+	# Apply into a scratch order so conflicts inside the file are detected per key.
+	for key: String in cfg.get_section_keys("bindings"):
+		var value: Variant = cfg.get_value("bindings", key)
+		if value is int and InputActions.DEFAULTS.has(StringName(key)) and set_binding(StringName(key), value):
+			continue
+		GameManager.report_error("settings", "Ignored invalid key binding '%s'" % key, "warning")
+
+
 func save_settings() -> Error:
 	var cfg := ConfigFile.new()
+	for action: String in _bindings:
+		cfg.set_value("bindings", action, _bindings[action])
 	for section: String in _values:
 		for key: String in _values[section]:
 			cfg.set_value(section, key, _values[section][key])

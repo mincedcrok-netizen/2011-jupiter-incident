@@ -10,6 +10,10 @@ const SUITES := [
 	"res://tests/test_player_registry.gd",
 	"res://tests/test_player_and_interaction.gd",
 	"res://tests/test_scene_manager.gd",
+	"res://tests/test_game_manager.gd",
+	"res://tests/test_narrative_data.gd",
+	"res://tests/test_room_and_boot.gd",
+	"res://tests/test_hud.gd",
 ]
 
 

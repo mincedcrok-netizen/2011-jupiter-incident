@@ -58,3 +58,28 @@ func test_deserialize_rejects_malformed() -> void:
 	ok(not GameState.deserialize({"flags": {"k": [1]}}), "bad value type")
 	ok(not GameState.deserialize({"flags": {"": true}}), "empty key")
 	eq(GameState.get_flag(&"keep"), true, "existing state untouched on failure")
+
+
+func test_is_flag_true_is_strict_and_never_errors() -> void:
+	GameState.set_flag(&"b", true)
+	GameState.set_flag(&"i", 1)
+	GameState.set_flag(&"s", "yes")
+	GameState.set_flag(&"f", false)
+	ok(GameState.is_flag_true(&"b"), "bool true")
+	ok(not GameState.is_flag_true(&"i"), "int 1 is not boolean true")
+	ok(not GameState.is_flag_true(&"s"), "string is not boolean true")
+	ok(not GameState.is_flag_true(&"f"), "bool false")
+	ok(not GameState.is_flag_true(&"missing"), "missing flag")
+
+
+func test_changing_a_flags_type_is_safe_and_publishes_change() -> void:
+	var seen := []
+	EventBus.subscribe(Events.FLAG_CHANGED, func(e: Dictionary) -> void: seen.append(e))
+	GameState.set_flag(&"k", "yes")
+	GameState.set_flag(&"k", 1)
+	GameState.set_flag(&"k", true)
+	GameState.set_flag(&"k", 1.5)
+	eq(seen.size(), 4, "each type change is a real change")
+	eq(GameState.get_flag(&"k"), 1.5, "final value stored")
+	GameState.set_flag(&"k", 1.5)
+	eq(seen.size(), 4, "identical re-set still publishes nothing")

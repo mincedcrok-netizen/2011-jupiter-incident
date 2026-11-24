@@ -29,7 +29,8 @@ func set_flag(key: StringName, value: Variant = true) -> bool:
 	var k := String(key)
 	var had: bool = _flags.has(k)
 	var old: Variant = _flags.get(k)
-	if had and old == value and typeof(old) == typeof(value):
+	# Compare types first: == between e.g. String and int is a runtime error in GDScript.
+	if had and typeof(old) == typeof(value) and old == value:
 		return true  # unchanged; no event
 	_flags[k] = value
 	EventBus.publish(Events.FLAG_CHANGED, {"key": k, "value": value, "old": old})
@@ -38,6 +39,13 @@ func set_flag(key: StringName, value: Variant = true) -> bool:
 
 func get_flag(key: StringName, default: Variant = false) -> Variant:
 	return _flags.get(String(key), default)
+
+
+## Strict boolean read: true only if the flag exists AND is the boolean true. Safe
+## against flags of other types (e.g. from a hand-edited save); never errors.
+func is_flag_true(key: StringName) -> bool:
+	var v: Variant = _flags.get(String(key), false)
+	return v is bool and v
 
 
 func has_flag(key: StringName) -> bool:

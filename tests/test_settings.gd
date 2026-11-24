@@ -10,6 +10,7 @@ func before_each() -> void:
 
 
 func after_each() -> void:
+	Settings.reset_bindings()
 	DirAccess.remove_absolute(PATH)
 	Settings.config_path = Settings.DEFAULT_PATH
 
@@ -68,3 +69,44 @@ func test_unparseable_file_falls_back_to_defaults() -> void:
 func test_input_defaults_registered() -> void:
 	ok(InputMap.has_action(InputActions.MOVE_FORWARD), "move_forward exists")
 	ok(InputMap.has_action(InputActions.INTERACT), "interact exists")
+
+
+func test_rebinding_applies_to_input_map() -> void:
+	ok(Settings.set_binding(InputActions.INTERACT, KEY_F), "rebind accepted")
+	eq(InputActions.current_keycode(InputActions.INTERACT), int(KEY_F), "InputMap updated")
+	eq(InputMap.action_get_events(InputActions.INTERACT).size(), 1, "old binding replaced, not added")
+
+
+func test_rebinding_rejects_bad_requests() -> void:
+	ok(not Settings.set_binding(&"not_an_action", KEY_F), "unknown action")
+	ok(not Settings.set_binding(InputActions.INTERACT, 0), "zero keycode")
+	ok(not Settings.set_binding(InputActions.INTERACT, -5), "negative keycode")
+	ok(not Settings.set_binding(InputActions.INTERACT, 99999999), "unnameable keycode")
+	ok(not Settings.set_binding(InputActions.INTERACT, KEY_W), "key already used by move_forward")
+	eq(InputActions.current_keycode(InputActions.INTERACT), int(KEY_E), "binding unchanged after refusals")
+
+
+func test_rebinding_persists_across_reload() -> void:
+	Settings.set_binding(InputActions.MOVE_FORWARD, KEY_UP)
+	eq(Settings.save_settings(), OK, "saved")
+	Settings.reset_bindings()
+	eq(InputActions.current_keycode(InputActions.MOVE_FORWARD), int(KEY_W), "reset to default")
+	Settings.load_settings()
+	eq(InputActions.current_keycode(InputActions.MOVE_FORWARD), int(KEY_UP), "restored from file")
+
+
+func test_bad_bindings_in_file_are_ignored() -> void:
+	GameManager.clear_errors()
+	var f := FileAccess.open(PATH, FileAccess.WRITE)
+	f.store_string("[bindings]\ninteract=\"banana\"\nbogus_action=70\nmove_left=-3\nsprint=%d\n" % int(KEY_CTRL))
+	f.close()
+	Settings.load_settings()
+	eq(InputActions.current_keycode(InputActions.INTERACT), int(KEY_E), "string value ignored")
+	eq(InputActions.current_keycode(InputActions.MOVE_LEFT), int(KEY_A), "negative keycode ignored")
+	eq(InputActions.current_keycode(InputActions.SPRINT), int(KEY_CTRL), "valid binding in same file still applied")
+	eq(GameManager.recent_errors().size(), 3, "each bad binding reported")
+	GameManager.clear_errors()
+
+
+func test_pause_is_a_registered_action() -> void:
+	ok(InputMap.has_action(InputActions.PAUSE), "pause action exists")
