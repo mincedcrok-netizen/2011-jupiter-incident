@@ -1,11 +1,27 @@
 [
-	{
-		"id": "test_dialogue_basic",
-		"canon": "test",
-		"lines": [
-			{"speaker": "test_speaker_a", "text": "TEST FIXTURE: always available."},
-			{"speaker": "test_speaker_b", "text": "TEST FIXTURE: needs flag.", "requires": ["test_flag"]},
-			{"speaker": "test_speaker_a", "text": "TEST FIXTURE: hidden once flag set.", "excludes": ["test_flag"]}
-		]
-	}
+	{"id": "test_dialogue_basic", "canon": "test", "start": "n1", "nodes": {
+		"n1": {"speaker": "test_speaker_a", "text": "FIXTURE one.", "next": "n2"},
+		"n2": {"speaker": "test_speaker_b", "text": "FIXTURE needs flag.", "requires": ["test_flag"], "next": "n3"},
+		"n3": {"speaker": "test_speaker_a", "text": "FIXTURE hidden with flag.", "excludes": ["test_flag"], "next": "n4"},
+		"n4": {"speaker": "test_speaker_b", "text": "FIXTURE pick one.", "choices": [
+			{"text": "Left", "next": "left", "set_flags": {"test_picked": "left"}},
+			{"text": "Right", "next": "right", "requires": ["test_right_ok"]},
+			{"text": "Leave", "next": ""}
+		]},
+		"left": {"speaker": "test_speaker_a", "text": "FIXTURE you went left.", "set_flags": {"test_left_seen": true, "test_count": 3}},
+		"right": {"speaker": "test_speaker_b", "text": "FIXTURE you went right."}
+	}},
+	{"id": "test_dialogue_loop", "canon": "test", "start": "a", "nodes": {
+		"a": {"speaker": "test_speaker_a", "text": "never", "requires": ["never_set"], "next": "b"},
+		"b": {"speaker": "test_speaker_a", "text": "never", "requires": ["never_set"], "next": "a"}
+	}},
+	{"id": "test_dialogue_deadend", "canon": "test", "start": "d", "nodes": {
+		"d": {"speaker": "test_speaker_a", "text": "FIXTURE no way out.", "choices": [
+			{"text": "hidden", "next": "", "requires": ["never_set"]}
+		]}
+	}},
+	{"id": "test_dialogue_chain", "canon": "test", "start": "c1", "nodes": {
+		"c1": {"speaker": "narrator", "text": "FIXTURE chain one.", "set_flags": {"test_chain_started": true}, "next": "c2"},
+		"c2": {"speaker": "system", "text": "FIXTURE chain two."}
+	}}
 ]

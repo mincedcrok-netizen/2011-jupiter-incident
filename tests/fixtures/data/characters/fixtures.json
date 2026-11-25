@@ -1,0 +1,10 @@
+[
+	{"id": "test_speaker_a", "canon": "test", "display_name": "Test Speaker A", "callsign": "Alpha",
+	 "role": "Test role A", "description": "Fixture character.", "personality": ["calm"],
+	 "voice": {"style": "Plain.", "quirks": ["none"]},
+	 "relationships": [{"with": "test_speaker_b", "note": "Fixture relationship."}],
+	 "states": ["aboard", "away", "gone"], "initial_state": "aboard", "color": "#ff8800"},
+	{"id": "test_speaker_b", "canon": "test", "display_name": "Test Speaker B",
+	 "role": "Test role B", "description": "Fixture character.",
+	 "voice": {"style": "Plain."}, "states": ["aboard"], "initial_state": "aboard"}
+]

@@ -28,6 +28,30 @@ static func read_string_array(d: Dictionary, field: String, errors: Array[String
 	return out
 
 
+static func is_flag_value(v: Variant) -> bool:
+	return v is bool or v is int or v is float or v is String
+
+
+## Optional {flag: value} map (used for set_flags). JSON numbers arrive as floats, so
+## whole floats are normalised to int to match what GameState stores after a load.
+static func read_flag_map(d: Dictionary, field: String, errors: Array[String], ctx: String) -> Dictionary:
+	var out: Dictionary = {}
+	if not d.has(field):
+		return out
+	if not (d[field] is Dictionary):
+		errors.append("%s: '%s' must be an object of flag: value" % [ctx, field])
+		return out
+	for k: Variant in d[field]:
+		var v: Variant = d[field][k]
+		if not is_nonempty_string(k) or not is_flag_value(v):
+			errors.append("%s: '%s' has an invalid key or value (only bool/number/string allowed)" % [ctx, field])
+			return {}
+		if v is float and is_equal_approx(v, round(v)) and absf(v) < 9.0e15:
+			v = int(v)
+		out[k] = v
+	return out
+
+
 static func check_common(d: Dictionary, errors: Array[String], ctx: String) -> void:
 	if not is_nonempty_string(d.get("id")):
 		errors.append("%s: missing or empty 'id'" % ctx)

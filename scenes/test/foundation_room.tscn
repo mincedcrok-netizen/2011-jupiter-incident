@@ -1,9 +1,10 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=24 format=3]
 
 [ext_resource type="PackedScene" path="res://gameplay/player/player.tscn" id="1_player"]
 [ext_resource type="Script" path="res://gameplay/interaction/interactable.gd" id="2_inter"]
 [ext_resource type="Script" path="res://scenes/core/gameplay_scene.gd" id="3_gameplay"]
 [ext_resource type="PackedScene" path="res://ui/hud.tscn" id="4_hud"]
+[ext_resource type="Script" path="res://gameplay/interaction/narrative_trigger.gd" id="5_trigger"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_shell"]
 albedo_color = Color(0.55, 0.6, 0.65, 1)
@@ -58,6 +59,38 @@ size = Vector3(0.8, 2, 0.8)
 
 [sub_resource type="BoxMesh" id="Mesh_terminal"]
 size = Vector3(0.8, 2, 0.8)
+
+[sub_resource type="CapsuleShape3D" id="Shape_npc"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="CapsuleMesh" id="Mesh_npc"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="Mat_npc"]
+albedo_color = Color(0.35, 0.82, 1, 1)
+emission_enabled = true
+emission = Color(0.35, 0.82, 1, 1)
+emission_energy_multiplier = 0.4
+
+[sub_resource type="BoxShape3D" id="Shape_pad"]
+size = Vector3(0.6, 1.7, 0.3)
+
+[sub_resource type="BoxMesh" id="Mesh_pad"]
+size = Vector3(0.6, 1.7, 0.3)
+
+[sub_resource type="StandardMaterial3D" id="Mat_pad"]
+albedo_color = Color(1, 0.7, 0.2, 1)
+emission_enabled = true
+emission = Color(1, 0.7, 0.2, 1)
+emission_energy_multiplier = 0.4
+
+[sub_resource type="BoxShape3D" id="Shape_vent"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="BoxMesh" id="Mesh_vent"]
+size = Vector3(1.4, 0.8, 0.1)
 
 [node name="FoundationRoom" type="Node3D"]
 script = ExtResource("3_gameplay")
@@ -166,3 +199,42 @@ surface_material_override/0 = SubResource("Mat_terminal")
 [node name="Player" parent="." instance=ExtResource("1_player")]
 
 [node name="HUD" parent="." instance=ExtResource("4_hud")]
+
+[node name="CrewMember" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0.9, -2.5)
+script = ExtResource("2_inter")
+interaction_id = &"demo_talk_scout"
+prompt_text = "Talk"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CrewMember"]
+shape = SubResource("Shape_npc")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CrewMember"]
+mesh = SubResource("Mesh_npc")
+surface_material_override/0 = SubResource("Mat_npc")
+
+[node name="DataPad" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0.85, -2.5)
+script = ExtResource("2_inter")
+interaction_id = &"demo_pickup_pad"
+prompt_text = "Read data pad"
+one_shot = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DataPad"]
+shape = SubResource("Shape_pad")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="DataPad"]
+mesh = SubResource("Mesh_pad")
+surface_material_override/0 = SubResource("Mat_pad")
+
+[node name="VentTrigger" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 1, -4.5)
+script = ExtResource("5_trigger")
+trigger_id = &"demo_area_vent"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="VentTrigger"]
+shape = SubResource("Shape_vent")
+
+[node name="VentGrille" type="MeshInstance3D" parent="VentTrigger"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -1.8)
+mesh = SubResource("Mesh_vent")

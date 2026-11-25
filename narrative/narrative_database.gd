@@ -1,19 +1,24 @@
 extends Node
-## Loads narrative data (dialogue sequences, recordings) from JSON files under
-## `data_root`, validating every entry. Bad entries are skipped and reported, never
-## crash the game. Unlocked recordings are stored as story flags, so they are saved,
-## loaded and (later) replicated through GameState with no extra machinery.
+## Loads all narrative DATA from JSON under `data_root`: characters, dialogue,
+## recordings, documents and events. Every entry is validated; bad entries are skipped
+## and reported, never crash the game. After loading, cross-references (speakers,
+## ids used by events, ...) are checked and problems reported as warnings.
+## Read-only at runtime; progress lives in NarrativeState.
 ##
-## Ownership: data is read-only on every peer; unlocking is AUTHORITY.
-## NOTE for Phase 8: exported builds must include *.json (export filter "data/*").
+## Entries with canon "test" are demo/fixture content and are ignored unless
+## `include_test_content` is true (default: debug builds only), so they cannot ship.
+## NOTE for Phase 8: exported builds must include *.json under data/.
 
-const RECORDING_FLAG_PREFIX := "recording_unlocked:"
+const KINDS := ["characters", "dialogue", "recordings", "documents", "events"]
+const SPECIAL_SPEAKERS := ["narrator", "system"]
 
 var data_root: String = "res://data"  # overridable (tests use fixtures)
+var include_test_content: bool = OS.is_debug_build()
 var load_errors: Array[String] = []
+var skipped_test_entries: int = 0
 
-var _dialogue: Dictionary = {}    # StringName -> DialogueSequence
-var _recordings: Dictionary = {}  # StringName -> RecordingEntry
+var _stores: Dictionary = {}  # kind -> {StringName id -> entry}
+var _events_by_trigger: Dictionary = {}  # StringName -> Array[NarrativeEvent]
 
 
 func _ready() -> void:
@@ -21,70 +26,87 @@ func _ready() -> void:
 
 
 func load_all() -> void:
-	_dialogue.clear()
-	_recordings.clear()
 	load_errors.clear()
-	_load_kind("dialogue")
-	_load_kind("recordings")
+	skipped_test_entries = 0
+	_events_by_trigger.clear()
+	for kind: String in KINDS:
+		_stores[kind] = {}
+	for kind: String in KINDS:  # characters first so later kinds can be cross-checked
+		_load_kind(kind)
+	_index_events()
+	_check_references()
 
 
-func has_dialogue(id: StringName) -> bool:
-	return _dialogue.has(id)
+# --- lookups -----------------------------------------------------------------
+
+func get_character(id: StringName) -> CharacterEntry:
+	return _stores["characters"].get(id)
 
 
 func get_dialogue(id: StringName) -> DialogueSequence:
-	return _dialogue.get(id)
-
-
-func has_recording(id: StringName) -> bool:
-	return _recordings.has(id)
+	return _stores["dialogue"].get(id)
 
 
 func get_recording(id: StringName) -> RecordingEntry:
-	return _recordings.get(id)
+	return _stores["recordings"].get(id)
+
+
+func get_document(id: StringName) -> DocumentEntry:
+	return _stores["documents"].get(id)
+
+
+func get_event(id: StringName) -> NarrativeEvent:
+	return _stores["events"].get(id)
+
+
+func has_character(id: StringName) -> bool:
+	return _stores["characters"].has(id)
+
+
+func has_dialogue(id: StringName) -> bool:
+	return _stores["dialogue"].has(id)
+
+
+func has_recording(id: StringName) -> bool:
+	return _stores["recordings"].has(id)
+
+
+func has_document(id: StringName) -> bool:
+	return _stores["documents"].has(id)
+
+
+func count(kind: String) -> int:
+	return (_stores.get(kind, {}) as Dictionary).size()
 
 
 func dialogue_count() -> int:
-	return _dialogue.size()
+	return count("dialogue")
 
 
 func recording_count() -> int:
-	return _recordings.size()
+	return count("recordings")
 
 
-func is_unlocked(id: StringName) -> bool:
-	return GameState.is_flag_true(StringName(RECORDING_FLAG_PREFIX + String(id)))
-
-
-## Unlocks a recording. Refuses unknown ids, unmet requirements, and non-authority peers.
-func unlock_recording(id: StringName) -> bool:
-	var rec := get_recording(id)
-	if rec == null:
-		_note("unlock_recording: unknown recording '%s'" % id)
-		return false
-	if not rec.is_unlockable():
-		return false
-	return GameState.set_flag(StringName(RECORDING_FLAG_PREFIX + String(id)), true)
-
-
-## Unlocked recordings, sorted by id for stable ordering.
-func unlocked_recordings() -> Array[RecordingEntry]:
-	# Sort as plain Strings: StringName ordering is not alphabetical.
+## All entries of a kind, sorted by id (plain-string sort; StringName order is unstable).
+func all_of(kind: String) -> Array:
 	var ids: Array[String] = []
-	for id: StringName in _recordings:
+	for id: StringName in (_stores.get(kind, {}) as Dictionary):
 		ids.append(String(id))
 	ids.sort()
-	var out: Array[RecordingEntry] = []
+	var out: Array = []
 	for id_text in ids:
-		if is_unlocked(StringName(id_text)):
-			out.append(_recordings[StringName(id_text)])
+		out.append(_stores[kind][StringName(id_text)])
 	return out
+
+
+func events_for_trigger(trigger_type: StringName) -> Array:
+	return _events_by_trigger.get(trigger_type, [])
 
 
 # --- loading -----------------------------------------------------------------
 
-func _load_kind(subdir: String) -> void:
-	var dir_path := "%s/%s" % [data_root, subdir]
+func _load_kind(kind: String) -> void:
+	var dir_path := "%s/%s" % [data_root, kind]
 	if not DirAccess.dir_exists_absolute(dir_path):
 		return  # absent folder == no content (checked first: get_files_at logs an engine error)
 	var files := Array(DirAccess.get_files_at(dir_path))
@@ -95,7 +117,7 @@ func _load_kind(subdir: String) -> void:
 		var path := "%s/%s" % [dir_path, file_name]
 		var entries := _read_entries(path)
 		for i in entries.size():
-			_register(subdir, entries[i], "%s#%d" % [file_name, i])
+			_register(kind, entries[i], "%s/%s#%d" % [kind, file_name, i])
 
 
 func _read_entries(path: String) -> Array:
@@ -109,24 +131,71 @@ func _read_entries(path: String) -> Array:
 	return json.data
 
 
-func _register(subdir: String, entry: Variant, where: String) -> void:
+func _register(kind: String, entry: Variant, where: String) -> void:
 	if not (entry is Dictionary):
 		_note("%s: entry must be an object" % where)
 		return
 	var errs: Array[String] = []
 	var obj: Object = null
-	if subdir == "dialogue":
-		obj = DialogueSequence.from_dict(entry, errs)
-	else:
-		obj = RecordingEntry.from_dict(entry, errs)
+	match kind:
+		"characters": obj = CharacterEntry.from_dict(entry, errs)
+		"dialogue": obj = DialogueSequence.from_dict(entry, errs)
+		"recordings": obj = RecordingEntry.from_dict(entry, errs)
+		"documents": obj = DocumentEntry.from_dict(entry, errs)
+		"events": obj = NarrativeEvent.from_dict(entry, errs)
 	if obj == null:
 		_note("%s: %s" % [where, "; ".join(errs)])
 		return
-	var store := _dialogue if subdir == "dialogue" else _recordings
+	if obj.canon == "test" and not include_test_content:
+		skipped_test_entries += 1
+		return
+	var store: Dictionary = _stores[kind]
 	if store.has(obj.id):
 		_note("%s: duplicate id '%s' ignored" % [where, obj.id])
 		return
 	store[obj.id] = obj
+
+
+func _index_events() -> void:
+	for ev: NarrativeEvent in all_of("events"):
+		var list: Array = _events_by_trigger.get(ev.trigger_type, [])
+		list.append(ev)
+		_events_by_trigger[ev.trigger_type] = list
+
+
+## Cross-reference checks. Problems are warnings: the entry stays loaded and the
+## runtime handles a missing target safely when it is actually used.
+func _check_references() -> void:
+	for seq: DialogueSequence in all_of("dialogue"):
+		for node_id: String in seq.nodes:
+			var speaker: String = seq.nodes[node_id]["speaker"]
+			if not has_character(StringName(speaker)) and not (speaker in SPECIAL_SPEAKERS):
+				_note("dialogue '%s' node '%s': unknown speaker '%s'" % [seq.id, node_id, speaker])
+	for rec: RecordingEntry in all_of("recordings"):
+		for seg: Dictionary in rec.segments:
+			if seg["speaker"] != "" and not has_character(StringName(seg["speaker"])):
+				_note("recording '%s': unknown speaker '%s'" % [rec.id, seg["speaker"]])
+	for ch: CharacterEntry in all_of("characters"):
+		for rel: Dictionary in ch.relationships:
+			if not has_character(StringName(rel["with"])):
+				_note("character '%s': relationship with unknown character '%s'" % [ch.id, rel["with"]])
+	for ev: NarrativeEvent in all_of("events"):
+		for a: Dictionary in ev.actions:
+			_check_action(ev, a)
+
+
+func _check_action(ev: NarrativeEvent, a: Dictionary) -> void:
+	var target := StringName(a.get("id", ""))
+	var missing := false
+	match a["type"]:
+		"start_dialogue": missing = not has_dialogue(target)
+		"unlock_recording", "open_recording": missing = not has_recording(target)
+		"unlock_document", "open_document": missing = not has_document(target)
+		"set_character_state":
+			var ch := get_character(target)
+			missing = ch == null or not (a["state"] in ch.states)
+	if missing:
+		_note("event '%s': action '%s' refers to unknown target '%s'" % [ev.id, a["type"], a.get("id")])
 
 
 func _note(message: String) -> void:

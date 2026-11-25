@@ -1,0 +1,6 @@
+[
+	{"id": "test_doc_report", "kind": "crew_report", "canon": "test", "title": "FIXTURE report",
+	 "author": "test_speaker_a", "in_world_date": "12-OCT-2011", "body": "FIXTURE body text."},
+	{"id": "test_doc_classified", "kind": "classified", "canon": "test", "title": "FIXTURE classified",
+	 "classification": "LEVEL 9", "requires": ["test_gate"], "body": "FIXTURE secret."}
+]

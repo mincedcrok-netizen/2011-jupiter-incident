@@ -1,0 +1,87 @@
+[
+	{
+		"id": "commander",
+		"canon": "proposed",
+		"display_name": "Dale Brannigan",
+		"callsign": "Bulwark",
+		"role": "Mission Commander / Heavy Defender",
+		"description": "Leads the crew of the U.S.S. Apollo-Meme. Loud, fiercely protective and impossible to rattle; refuses to concede ground to any alien entity.",
+		"personality": ["loud", "fiercely protective", "unshakeable morale", "refuses to give ground"],
+		"voice": {
+			"style": "Booming and direct. Short commands, protective warmth, never backs down from a statement.",
+			"quirks": ["Calls crew members by callsign", "Turns every setback into a rallying cry"]
+		},
+		"relationships": [
+			{"with": "pilot", "note": "Quick to scold the pilot's console mishaps, and just as quick to cover for them."}
+		],
+		"signature_gear": "The Gatling: heavy rotary kinetic blaster. Grants temporary knockback immunity and reinforced shielding.",
+		"states": ["aboard", "holding_bridge"],
+		"initial_state": "aboard",
+		"canonical_status": "Active / Survivor. Held the bridge deck solo for over a decade; currently steering the wreckage home.",
+		"color": "#ffb347"
+	},
+	{
+		"id": "scout",
+		"canon": "proposed",
+		"display_name": "Zeke Marlowe",
+		"callsign": "Hound",
+		"role": "Reconnaissance and Communications Specialist",
+		"description": "Hyper-energetic, erratic and extremely fast. Prone to barking at alien telemetry units.",
+		"personality": ["hyper-energetic", "erratic", "extremely fast", "barks at alien telemetry"],
+		"voice": {
+			"style": "Rapid, run-on and loud. Interrupts himself, adds sound effects, starts sentences before finishing the last one.",
+			"quirks": ["Barks at unfamiliar telemetry", "Shouts the important word"]
+		},
+		"relationships": [
+			{"with": "commander", "note": "Looks to the commander for direction but rarely waits for it."},
+			{"with": "quartermaster", "note": "The quartermaster's deadpan is the only thing that ever slows him down."}
+		],
+		"signature_gear": "Sonic Bark & Dash: short-burst hyper-sprint with an audio pulse that stuns nearby entities.",
+		"states": ["aboard", "missing_in_action"],
+		"initial_state": "aboard",
+		"canonical_status": "Missing in Action. Last seen manually launching a decoy pod directly into Io's volcanic flare.",
+		"color": "#5ad1ff"
+	},
+	{
+		"id": "pilot",
+		"canon": "proposed",
+		"display_name": "Wren Calloway",
+		"callsign": "Cursor",
+		"role": "Chief Pilot and Systems Technician",
+		"description": "Tech-savvy and hyper-analytical, but prone to panic-clicking under high operational stress. Responsible for the October 15 navigational blunder.",
+		"personality": ["tech-savvy", "hyper-analytical", "panic-clicks under stress"],
+		"voice": {
+			"style": "Precise and technical while calm; under pressure it fragments into rapid corrections and over-explaining.",
+			"quirks": ["Narrates the exact controls being touched", "Spirals into repeated corrections when stressed"]
+		},
+		"relationships": [
+			{"with": "commander", "note": "Dreads the commander's raised voice and trusts the commander completely."}
+		],
+		"signature_gear": "System Override Keycard: instantly repairs structural doors, hacks terminals and deploys turrets.",
+		"states": ["aboard", "presumed_lost"],
+		"initial_state": "aboard",
+		"canonical_status": "Presumed Lost. Entered the engine core during the siege to manually re-route fuel cells.",
+		"color": "#c58bff"
+	},
+	{
+		"id": "quartermaster",
+		"canon": "proposed",
+		"display_name": "Hollis Prewitt",
+		"callsign": "Ledger",
+		"role": "Tactical Analyst and Quartermaster",
+		"description": "Dry, deadpan and cynical. Delivers unbothered commentary while active hull breaches occur.",
+		"personality": ["dry", "deadpan", "cynical", "unbothered"],
+		"voice": {
+			"style": "Flat understatement. Dry one-liners delivered at the worst possible moment; never raises their voice.",
+			"quirks": ["Inventory-count humor", "Reports disasters in the tone of a weather forecast"]
+		},
+		"relationships": [
+			{"with": "scout", "note": "Treats the scout's chaos as background noise."}
+		],
+		"signature_gear": "Gravity Tether & Barrier: deploys temporary hard-light barricades and slows incoming hostile targets.",
+		"states": ["aboard", "unknown"],
+		"initial_state": "aboard",
+		"canonical_status": "Unknown. Evacuated via Pod 04 toward Europa's icy surface during the main breach.",
+		"color": "#9be37a"
+	}
+]

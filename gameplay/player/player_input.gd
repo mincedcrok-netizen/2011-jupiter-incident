@@ -16,6 +16,11 @@ var _look_accum: Vector2 = Vector2.ZERO
 func poll() -> void:
 	if not is_local:
 		return
+	if GameManager.input_blocked():
+		move = Vector2.ZERO
+		sprint = false
+		_look_accum = Vector2.ZERO
+		return
 	move = Input.get_vector(
 		InputActions.MOVE_LEFT, InputActions.MOVE_RIGHT,
 		InputActions.MOVE_FORWARD, InputActions.MOVE_BACK
@@ -24,7 +29,7 @@ func poll() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not is_local:
+	if not is_local or GameManager.input_blocked():
 		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		_look_accum += (event as InputEventMouseMotion).relative

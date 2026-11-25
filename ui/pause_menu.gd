@@ -12,9 +12,9 @@ func _ready() -> void:
 	_root.visible = false
 	_resume_button.pressed.connect(func() -> void: GameManager.resume())
 	_quit_button.pressed.connect(func() -> void: GameManager.quit_game())
-	EventBus.subscribe(Events.GAME_PAUSED, _on_paused)
-	EventBus.subscribe(Events.GAME_RESUMED, _on_resumed)
-	EventBus.subscribe(Events.GAME_STATE_CHANGED, _on_state_changed)
+	EventBus.subscribe(Events.GAME_PAUSED, _on_paused, true)
+	EventBus.subscribe(Events.GAME_RESUMED, _on_resumed, true)
+	EventBus.subscribe(Events.GAME_STATE_CHANGED, _on_state_changed, true)
 
 
 func is_menu_visible() -> bool:

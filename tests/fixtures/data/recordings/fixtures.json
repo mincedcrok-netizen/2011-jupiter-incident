@@ -1,18 +1,10 @@
 [
-	{
-		"id": "test_recording_cassette",
-		"kind": "cassette",
-		"canon": "test",
-		"title": "TEST FIXTURE cassette",
-		"body": "Not canon. Exercises the data pipeline.",
-		"author": "test_speaker_a"
-	},
-	{
-		"id": "test_recording_locked",
-		"kind": "black_box",
-		"canon": "test",
-		"title": "TEST FIXTURE gated transcript",
-		"body": "Not canon. Requires a flag.",
-		"requires": ["test_gate"]
-	}
+	{"id": "test_recording_cassette", "kind": "cassette", "canon": "test", "title": "FIXTURE cassette",
+	 "segments": [{"speaker": "test_speaker_a", "text": "First segment.", "seconds": 2},
+	              {"text": "Second segment.", "seconds": 2}]},
+	{"id": "test_recording_locked", "kind": "black_box", "canon": "test", "title": "FIXTURE gated",
+	 "requires": ["test_gate"], "segments": [{"text": "Gated.", "seconds": 2}]},
+	{"id": "test_recording_no_audio", "kind": "dashcam", "canon": "test", "title": "FIXTURE missing audio",
+	 "audio": "res://assets/audio/does_not_exist.ogg", "in_world_date": "01-NOV-2011",
+	 "segments": [{"text": "Transcript only.", "seconds": 2}]}
 ]

@@ -12,6 +12,11 @@ const SUITES := [
 	"res://tests/test_scene_manager.gd",
 	"res://tests/test_game_manager.gd",
 	"res://tests/test_narrative_data.gd",
+	"res://tests/test_dialogue_manager.gd",
+	"res://tests/test_narrative_state.gd",
+	"res://tests/test_event_director.gd",
+	"res://tests/test_recording_player.gd",
+	"res://tests/test_narrative_ui.gd",
 	"res://tests/test_room_and_boot.gd",
 	"res://tests/test_hud.gd",
 ]

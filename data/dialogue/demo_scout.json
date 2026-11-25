@@ -1,0 +1,39 @@
+[
+	{
+		"id": "demo_scout_intro",
+		"canon": "test",
+		"start": "again",
+		"nodes": {
+			"again": {
+				"speaker": "scout", "text": "DEMO: Back again?! Good, good, ask me stuff!",
+				"requires": ["demo_scout_met"], "next": "first"
+			},
+			"first": {
+				"speaker": "scout", "text": "DEMO: HEY! You made it! The terminal over there keeps making noises, I barked at it!",
+				"excludes": ["demo_scout_met"], "set_flags": {"demo_scout_met": true}, "next": "ask"
+			},
+			"ask": {
+				"speaker": "scout", "text": "DEMO: So what do you wanna know?",
+				"choices": [
+					{"text": "What happened to the ship?", "next": "ship", "set_flags": {"demo_asked_ship": true}},
+					{"text": "What is with the terminal?", "next": "terminal"},
+					{"text": "That recording the terminal printed was something.", "next": "archive",
+						"requires": ["interactable_used:foundation_test_terminal"]},
+					{"text": "Nothing. See you.", "next": ""}
+				]
+			},
+			"ship": {
+				"speaker": "scout", "text": "DEMO: Wrong turn near Mars. A VERY wrong turn. The pilot swears it was a heater switch.",
+				"next": "ask"
+			},
+			"terminal": {
+				"speaker": "scout", "text": "DEMO: It hums. I barked. It hummed back. Try it, press the thing!",
+				"next": "ask"
+			},
+			"archive": {
+				"speaker": "scout", "text": "DEMO: Right?! Everything you find goes in the archive. Hit Tab. I left a note in there.",
+				"set_flags": {"demo_scout_noticed_archive": true}, "next": ""
+			}
+		}
+	}
+]

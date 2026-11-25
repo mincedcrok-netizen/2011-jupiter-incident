@@ -10,12 +10,6 @@ func before_each() -> void:
 	GameState.reset()
 	PlayerRegistry.clear()
 	EventBus.clear()
-	# EventBus.clear() drops GameManager's/menu's own subscriptions; restore them.
-	EventBus.subscribe(Events.SCENE_CHANGE_FAILED, GameManager._on_scene_change_failed)
-	var menu := _menu()
-	EventBus.subscribe(Events.GAME_PAUSED, menu._on_paused)
-	EventBus.subscribe(Events.GAME_RESUMED, menu._on_resumed)
-	EventBus.subscribe(Events.GAME_STATE_CHANGED, menu._on_state_changed)
 
 
 func after_each() -> void:

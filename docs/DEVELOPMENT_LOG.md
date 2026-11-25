@@ -5,7 +5,7 @@ Repo contained only the README and the Lore Bible PDF. Decisions approved: Godot
 original archetype stand-in characters; campaign set during the 2011 siege (2012-2024 via
 found footage); proposed lore must be marked `PROPOSED` and approved before use.
 
-## Phase 1: technical foundation (implemented and tested; awaiting approval)
+## Phase 1: technical foundation (done, approved)
 
 ### Delivered
 Core services (EventBus, Net authority shim, GameState flags, SaveSystem, Settings with
@@ -42,3 +42,47 @@ missing data folder logged an engine error every launch.
 - SceneManager loads synchronously; no loading screen.
 - The foundation room is a test harness with primitive geometry.
 - Exported builds must include `*.json` under `data/` (Phase 8).
+
+## Phase 2: narrative foundation (implemented and tested; awaiting approval)
+
+### Delivered
+Dialogue graphs with conditions/choices/flag effects; character profiles with voice, relationships and
+progression states; recordings (cassette / dashcam / black-box) with timed transcript playback; five
+document kinds with a reader; data-defined events (interaction, area trigger, flag change, dialogue end,
+scene entry, ...); objectives; story-flag-backed discovery/read tracking; save/load of all narrative progress;
+and a retro-styled interface (dialogue box, recording player, document reader, archive on Tab, objectives
+HUD, toasts). See `docs/NARRATIVE_ARCHITECTURE.md`.
+
+### Decisions made while building (flagged for review)
+- **Characters are the approved original stand-ins**, not named real people (Phase 0 decision #2), even though the Phase 2 brief names the real people. All names/voices/relationships are PROPOSED (`docs/CHARACTER_STANDINS.md`).
+- The Phase 1 linear-lines dialogue format and its cassette/dashcam/report/personal-record recording kinds were **replaced** (nothing consumed them): dialogue is a node graph, recordings use timed segments, and reports/notes moved to the document system.
+- `EventBus` gained permanent subscriptions so system listeners survive `clear()`.
+- Demo content is `canon: "test"` and is excluded from release builds. No Section 4 or Zero-G material was written; nothing here defines an unresolved mystery or a character outcome.
+
+### How it was verified (cold `.godot` cache)
+| Check | Result |
+|---|---|
+| Headless suites, 572 checks (data validation, dialogue, state, events, recording player, UI behaviour + layout, saves) | 0 failed, no script errors |
+| Rendered playthrough in a real window, real key presses, screenshots, 73 checks (talk, choose, conditional re-visit, terminal, archive, recording, document, area trigger, save, wipe, load, pause) | 0 failed |
+| Fresh-process persistence (settings, rebinding, flags, recordings, documents, character state, objectives, completed events) + negative control | OK |
+| Mutation checks: dialogue ignoring conditions, saves dropping events, events ignoring conditions, zero-size overlay bug | each caught |
+| Full logs of the real main scene (windowed + headless) | no game errors |
+
+Bugs found by looking at screenshots / hostile tests and fixed: all overlays had zero size
+(`set_anchors_preset` vs `set_anchors_and_offsets_preset`), toasts hidden behind reader panels,
+HUD prompt ghosting through modals, `set_flag` crash when a flag changed type (Phase 1 code, fixed then).
+
+### NOT verified
+- **Windows**, **Forward+ renderer**, **performance**, **audio** (no audio files exist; the audio path is only tested for the missing-file fallback), **real mouse feel**, and the **Godot editor UI** (all as in Phase 1).
+- Fonts: the retro look relies on a system monospace font; on a machine without one it will fall back to Godot's default font.
+- The look is placeholder: scanlines and neon-green panels, no VHS distortion, chromatic aberration or CRT curvature (Phase 8).
+
+### Known limitations
+- Content: only the four crew profiles and clearly marked demo content exist; no campaign dialogue/recordings/documents, no Section 4 / Zero-G proposals yet.
+- A conversation in progress is not saved (a load discards it). No mid-conversation autosave/skip/backlog/history.
+- Choice keys 1-6 are fixed (not rebindable); no settings screen for key bindings.
+- Dialogue text has no flag interpolation, no portraits or per-line mood, and no localisation.
+- Recording corruption effects (the O. Algo text/audio glitching) are not implemented; corrupted segments are just text.
+- Toasts overlap the right edge of reader panels on narrow windows; no gamepad support in any view.
+- Co-op: state is authority-only and flag-based (replication-ready), but nothing is networked; per-player UI state for shared conversations is undecided.
+- Event data can reference ids that do not exist; this is warned at load and reported at runtime, not blocked.

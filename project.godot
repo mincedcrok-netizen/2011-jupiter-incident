@@ -22,6 +22,10 @@ Settings="*res://core/settings.gd"
 SceneManager="*res://core/scene_manager.gd"
 PlayerRegistry="*res://gameplay/player_registry.gd"
 NarrativeDatabase="*res://narrative/narrative_database.gd"
+NarrativeState="*res://narrative/narrative_state.gd"
+DialogueManager="*res://narrative/dialogue_manager.gd"
+EventDirector="*res://narrative/event_director.gd"
+NarrativeUI="*res://ui/narrative_ui.gd"
 
 [display]
 

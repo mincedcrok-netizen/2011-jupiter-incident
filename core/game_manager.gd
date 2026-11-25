@@ -12,11 +12,12 @@ const MAX_ERRORS := 50
 
 var state: State = State.IDLE
 var _errors: Array[Dictionary] = []
+var _modals: Dictionary = {}  # String id -> true; open full-attention UI (dialogue, reader...)
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS  # must keep running while the tree is paused
-	EventBus.subscribe(Events.SCENE_CHANGE_FAILED, _on_scene_change_failed)
+	EventBus.subscribe(Events.SCENE_CHANGE_FAILED, _on_scene_change_failed, true)
 	var menu_scene := load(PAUSE_MENU_SCENE) as PackedScene
 	if menu_scene == null:
 		report_error("game_manager", "Pause menu scene failed to load: %s" % PAUSE_MENU_SCENE)
@@ -34,6 +35,7 @@ func enter_gameplay() -> void:
 
 func leave_gameplay() -> void:
 	get_tree().paused = false
+	_modals.clear()
 	_set_state(State.IDLE)
 
 
@@ -66,9 +68,31 @@ func is_paused() -> bool:
 	return state == State.PAUSED
 
 
-## Mouse is captured only while actively playing; every other state needs a cursor.
+## A modal is any UI that takes the player's full attention (dialogue, document
+## reader, ...). While one is open the player cannot move/look/interact and the
+## mouse is released. Idempotent per id.
+func push_modal(id: String) -> void:
+	_modals[id] = true
+	_apply_mouse_mode()
+
+
+func pop_modal(id: String) -> void:
+	_modals.erase(id)
+	_apply_mouse_mode()
+
+
+func is_modal_open() -> bool:
+	return not _modals.is_empty()
+
+
+## True whenever the local player must not receive gameplay input.
+func input_blocked() -> bool:
+	return state != State.PLAYING or not _modals.is_empty()
+
+
+## Mouse is captured only while actively playing with no modal UI open.
 func wants_mouse_captured() -> bool:
-	return state == State.PLAYING
+	return state == State.PLAYING and _modals.is_empty()
 
 
 func quit_game() -> void:

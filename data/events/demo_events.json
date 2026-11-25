@@ -1,0 +1,53 @@
+[
+	{
+		"id": "demo_ev_intro", "canon": "test",
+		"trigger": {"type": "scene_change_completed", "match": {"path": "res://scenes/test/foundation_room.tscn"}},
+		"actions": [{"type": "set_objective", "id": "demo_find_scout", "text": "Find the crew member and talk to them."}]
+	},
+	{
+		"id": "demo_ev_talk_scout", "canon": "test", "once": false,
+		"trigger": {"type": "interacted", "match": {"interaction_id": "demo_talk_scout"}},
+		"actions": [{"type": "start_dialogue", "id": "demo_scout_intro"}]
+	},
+	{
+		"id": "demo_ev_dialogue_done", "canon": "test",
+		"trigger": {"type": "dialogue_ended", "match": {"id": "demo_scout_intro", "completed": true}},
+		"requires": ["objective_added:demo_find_scout"],
+		"actions": [
+			{"type": "complete_objective", "id": "demo_find_scout"},
+			{"type": "set_objective", "id": "demo_use_terminal", "text": "Use the glowing terminal."}
+		]
+	},
+	{
+		"id": "demo_ev_terminal", "canon": "test",
+		"trigger": {"type": "interacted", "match": {"interaction_id": "foundation_test_terminal"}},
+		"actions": [
+			{"type": "unlock_recording", "id": "demo_tape_black_box"},
+			{"type": "notify", "text": "The terminal coughs up a cassette."}
+		]
+	},
+	{
+		"id": "demo_ev_terminal_objective", "canon": "test",
+		"trigger": {"type": "interacted", "match": {"interaction_id": "foundation_test_terminal"}},
+		"requires": ["objective_added:demo_use_terminal"],
+		"actions": [{"type": "complete_objective", "id": "demo_use_terminal"}]
+	},
+	{
+		"id": "demo_ev_pad", "canon": "test",
+		"trigger": {"type": "interacted", "match": {"interaction_id": "demo_pickup_pad"}},
+		"actions": [{"type": "open_document", "id": "demo_report_launch"}]
+	},
+	{
+		"id": "demo_ev_vent", "canon": "test",
+		"trigger": {"type": "area_entered", "match": {"trigger_id": "demo_area_vent"}},
+		"actions": [
+			{"type": "unlock_document", "id": "demo_note_vent"},
+			{"type": "notify", "text": "Something is scratched into the vent grille."}
+		]
+	},
+	{
+		"id": "demo_ev_classified", "canon": "test",
+		"trigger": {"type": "flag_changed", "match": {"key": "demo_scout_noticed_archive"}},
+		"actions": [{"type": "unlock_document", "id": "demo_classified_stub"}]
+	}
+]

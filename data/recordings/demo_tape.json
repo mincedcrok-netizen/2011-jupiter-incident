@@ -1,0 +1,16 @@
+[
+	{
+		"id": "demo_tape_black_box",
+		"kind": "black_box",
+		"canon": "test",
+		"title": "DEMO: Flight deck fragment",
+		"in_world_date": "15-OCT-2011",
+		"segments": [
+			{"speaker": "pilot", "text": "DEMO: Bit chilly in here. I'll nudge the heat up a notch.", "seconds": 3},
+			{"speaker": "commander", "text": "DEMO: Not that console! That is the flight interface!", "seconds": 3},
+			{"speaker": "scout", "text": "[inaudible barking] WAIT! Why is the engine glowing RED?!", "seconds": 3},
+			{"speaker": "quartermaster", "text": "DEMO: Well. That was Mars.", "seconds": 2.5},
+			{"text": "[AUDIO CORRUPTION REGISTERED]", "seconds": 2}
+		]
+	}
+]

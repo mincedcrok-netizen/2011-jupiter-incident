@@ -1,0 +1,43 @@
+[
+	{
+		"id": "demo_report_launch",
+		"kind": "crew_report",
+		"canon": "test",
+		"title": "DEMO: Launch-day morale report",
+		"author": "quartermaster",
+		"in_world_date": "12-OCT-2011",
+		"body": "DEMO DOCUMENT. Not canon.\n\nLift-off from Cape Canaveral nominal. Morale: high. Tactical discipline: none observed.\n\nSnack inventory is already 11 percent below plan.\n\n- Quartermaster"
+	},
+	{
+		"id": "demo_note_vent",
+		"kind": "personal_note",
+		"canon": "test",
+		"title": "DEMO: Note scratched into a vent grille",
+		"author": "scout",
+		"body": "DEMO DOCUMENT. Not canon.\n\nsomething was in the vents again. i barked. it did not bark back. that is worse."
+	},
+	{
+		"id": "demo_classified_stub",
+		"kind": "classified",
+		"canon": "test",
+		"title": "DEMO: Restricted access record",
+		"classification": "LEVEL 3",
+		"requires": ["demo_scout_noticed_archive"],
+		"in_world_date": "03-NOV-2011",
+		"body": "DEMO DOCUMENT. Not canon.\n\nThis record only appears once the archive has been pointed out to you. It exists to prove that documents can be gated on story flags and that classified records display differently."
+	},
+	{
+		"id": "demo_log_hull",
+		"kind": "technical_log",
+		"canon": "test",
+		"title": "DEMO: Hull integrity log",
+		"body": "DEMO DOCUMENT. Not canon.\n\nHull integrity: 100 percent (test room)."
+	},
+	{
+		"id": "demo_incident_stub",
+		"kind": "incident_report",
+		"canon": "test",
+		"title": "DEMO: Incident report stub",
+		"body": "DEMO DOCUMENT. Not canon.\n\nIncident: none. This entry exists so every document kind has demo coverage."
+	}
+]

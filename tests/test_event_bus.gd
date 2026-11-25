@@ -56,3 +56,13 @@ func test_freed_subscriber_is_pruned_not_called() -> void:
 	l.free()
 	EventBus.publish(&"x")  # must not crash on the dead handler
 	eq(EventBus.subscriber_count(&"x"), 0, "dead handler pruned on publish")
+
+
+func test_clear_keeps_permanent_subscriptions() -> void:
+	var counter := {"p": 0, "t": 0}
+	EventBus.subscribe(&"perm_test", func(_p: Dictionary) -> void: counter["p"] += 1, true)
+	EventBus.subscribe(&"perm_test", func(_p: Dictionary) -> void: counter["t"] += 1)
+	EventBus.clear()
+	EventBus.publish(&"perm_test")
+	eq(counter["p"], 1, "permanent handler survived clear()")
+	eq(counter["t"], 0, "transient handler dropped by clear()")

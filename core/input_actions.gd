@@ -11,6 +11,7 @@ const MOVE_RIGHT := &"move_right"
 const SPRINT := &"sprint"
 const INTERACT := &"interact"
 const PAUSE := &"pause"
+const OPEN_LOG := &"open_log"
 
 const DEFAULTS := {
 	MOVE_FORWARD: KEY_W,
@@ -20,6 +21,7 @@ const DEFAULTS := {
 	SPRINT: KEY_SHIFT,
 	INTERACT: KEY_E,
 	PAUSE: KEY_ESCAPE,
+	OPEN_LOG: KEY_TAB,
 }
 
 

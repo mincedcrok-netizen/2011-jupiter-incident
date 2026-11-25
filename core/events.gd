@@ -30,3 +30,28 @@ const GAME_PAUSED := &"game_paused"
 const GAME_RESUMED := &"game_resumed"
 ## {context: String, message: String, severity: String}
 const ERROR_REPORTED := &"error_reported"
+
+## --- Phase 2 narrative events ---
+## {id: StringName}
+const DIALOGUE_STARTED := &"dialogue_started"
+## {id: StringName, node: String, speaker: String, text: String, choices: Array[String]}
+const DIALOGUE_NODE := &"dialogue_node"
+## {id: StringName, completed: bool}
+const DIALOGUE_ENDED := &"dialogue_ended"
+## {id: StringName}
+const RECORDING_UNLOCKED := &"recording_unlocked"
+const RECORDING_PLAYED := &"recording_played"
+const DOCUMENT_FOUND := &"document_found"
+const DOCUMENT_READ := &"document_read"
+## {id: StringName, state: String, old: String}
+const CHARACTER_STATE_CHANGED := &"character_state_changed"
+## {id: String, text: String, kind: "added" | "completed"}
+const OBJECTIVE_CHANGED := &"objective_changed"
+## {id: StringName}
+const NARRATIVE_EVENT_FIRED := &"narrative_event_fired"
+## {text: String}
+const NOTIFICATION := &"notification"
+## {trigger_id: String, peer_id: int}  (published by NarrativeTrigger areas)
+const AREA_ENTERED := &"area_entered"
+## {kind: "document" | "recording", id: StringName}  (asks the UI layer to open something)
+const UI_OPEN_REQUESTED := &"ui_open_requested"

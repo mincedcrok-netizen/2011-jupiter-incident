@@ -33,3 +33,14 @@ func test_malformed_event_payload_is_safe() -> void:
 	EventBus.publish(Events.INTERACTION_FOCUS_CHANGED, {})
 	eq(hud.prompt_text(), "", "missing prompt key treated as no focus")
 	EventBus.publish(Events.INTERACTION_FOCUS_CHANGED, {"prompt": 42})
+
+
+func test_hud_hides_while_a_modal_is_open() -> void:
+	await tree.process_frame
+	ok(hud.is_hud_visible(), "visible normally")
+	GameManager.push_modal("test_modal")
+	await tree.process_frame
+	ok(not hud.is_hud_visible(), "hidden behind dialogue/readers")
+	GameManager.pop_modal("test_modal")
+	await tree.process_frame
+	ok(hud.is_hud_visible(), "back when the modal closes")
