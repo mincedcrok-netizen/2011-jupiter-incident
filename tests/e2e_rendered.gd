@@ -88,6 +88,7 @@ func _run() -> void:
 	print("Renderer: %s | display: %s" % [RenderingServer.get_video_adapter_name(), DisplayServer.get_name()])
 	# --- boot the real entry scene -------------------------------------------------
 	var boot := (load("res://scenes/boot.tscn") as PackedScene).instantiate()
+	boot.set("first_scene", "res://scenes/test/foundation_room.tscn")  # the Phase 1/2 harness room
 	root.add_child(boot)
 	await frames(20)
 	check(scene_manager.current_scene_path == "res://scenes/test/foundation_room.tscn", "boot scene hands off to the test room")

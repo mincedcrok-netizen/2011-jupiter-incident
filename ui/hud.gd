@@ -8,6 +8,8 @@ extends CanvasLayer
 
 func _ready() -> void:
 	_prompt.text = ""
+	_root.add_child(WaypointView.new())
+	_root.add_child(LocationView.new())
 	EventBus.subscribe(Events.INTERACTION_FOCUS_CHANGED, _on_focus_changed, true)
 
 
@@ -35,4 +37,4 @@ func _on_focus_changed(payload: Dictionary) -> void:
 		_prompt.text = ""
 		return
 	var key_name := OS.get_keycode_string(InputActions.current_keycode(InputActions.INTERACT))
-	_prompt.text = "[%s] %s" % [key_name, text]
+	_prompt.text = "[%s] %s" % [key_name, NarrativeText.resolve(text)]

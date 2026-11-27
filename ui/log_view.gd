@@ -81,12 +81,12 @@ func rebuild() -> void:
 	_clear(_doc_box)
 	for rec: RecordingEntry in NarrativeState.unlocked_recordings():
 		var mark := "" if NarrativeState.was_recording_played(rec.id) else "[NEW] "
-		var b := RetroStyle.button("%s%s" % [mark, rec.title])
+		var b := RetroStyle.button("%s%s" % [mark, NarrativeText.resolve(rec.title)])
 		b.pressed.connect(_open_item.bind("recording", rec.id))
 		_rec_box.add_child(b)
 	for doc: DocumentEntry in NarrativeState.found_documents():
 		var mark := "" if NarrativeState.is_document_read(doc.id) else "[NEW] "
-		var b := RetroStyle.button("%s%s" % [mark, doc.title])
+		var b := RetroStyle.button("%s%s" % [mark, NarrativeText.resolve(doc.title)])
 		b.pressed.connect(_open_item.bind("document", doc.id))
 		_doc_box.add_child(b)
 	for box: VBoxContainer in [_rec_box, _doc_box]:

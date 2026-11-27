@@ -1,0 +1,19 @@
+[
+	{"id": "black_box_0811a", "kind": "black_box", "canon": "proposed",
+	 "title": "Black-box log #0811-A: flight deck", "in_world_date": "15-OCT-2011",
+	 "segments": [
+		{"speaker": "pilot", "text": "Is it getting chilly in here? I'll nudge the heat up a bit.", "seconds": 3.5},
+		{"speaker": "commander", "text": "{callsign:pilot}, hands OFF that console! That is the flight interface!", "seconds": 3.5},
+		{"speaker": "scout", "text": "[inaudible barking] WAIT. Why is the engine glowing RED?!", "seconds": 3.5},
+		{"speaker": "quartermaster", "text": "Well. That was Mars. Wake me when we get somewhere interesting.", "seconds": 3.5},
+		{"text": "[AUDIO CORRUPTION: SYNTH FREQUENCY OVERLOAD REGISTERED]", "seconds": 2.5}
+	 ]},
+	{"id": "crew_cassette_livestream", "kind": "cassette", "canon": "proposed",
+	 "title": "Cassette: live-stream outtakes", "in_world_date": "13-OCT-2011",
+	 "segments": [
+		{"speaker": "scout", "text": "We are LIVE from low orbit! Say hi to chat! Hi chat! HI!", "seconds": 3.5},
+		{"speaker": "quartermaster", "text": "The sponsor would like me to say the snacks are 'fuel for exploration.' They are salty paste.", "seconds": 4.5},
+		{"speaker": "commander", "text": "Stay on script, crew. We represent the whole programme up here!", "seconds": 3.5},
+		{"speaker": "pilot", "text": "Quick check, everyone: nobody touch anything. Everything is fine. I am only looking.", "seconds": 4.0}
+	 ]}
+]

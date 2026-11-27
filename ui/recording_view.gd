@@ -75,7 +75,7 @@ func open_recording(id: StringName) -> bool:
 		return false
 	close_view()
 	player = RecordingPlayer.new(rec)
-	_title.text = "● %s" % rec.title
+	_title.text = "● %s" % NarrativeText.resolve(rec.title)
 	var kinds := {"cassette": "AUDIO CASSETTE", "dashcam": "DASHCAM FOOTAGE", "black_box": "BLACK-BOX TRANSCRIPT"}
 	var parts: Array[String] = [kinds.get(rec.kind, rec.kind)]
 	if rec.in_world_date != "":
@@ -136,7 +136,8 @@ func _refresh() -> void:
 	var lines: Array[String] = []
 	for seg: Dictionary in player.revealed_segments():
 		var who: String = seg["speaker"]
-		lines.append(("%s: %s" % [RetroStyle.character_name(who), seg["text"]]) if who != "" else seg["text"])
+		var seg_text := NarrativeText.resolve(seg["text"])
+		lines.append(("%s: %s" % [RetroStyle.character_name(who), seg_text]) if who != "" else seg_text)
 	_transcript.text = "\n\n".join(lines)
 	_progress.text = "%s / %s" % [RetroStyle.mmss(player.elapsed), RetroStyle.mmss(player.recording.total_seconds())]
 	match player.state:

@@ -22,17 +22,24 @@ func _physics_process(_delta: float) -> void:
 			target = null
 	if target != focused:
 		focused = target
-		EventBus.publish(Events.INTERACTION_FOCUS_CHANGED, {
-			"interaction_id": focused.interaction_id if focused else &"",
-			"prompt": focused.prompt_text if focused else "",
-		})
+		_publish_focus()
+
+
+func _publish_focus() -> void:
+	EventBus.publish(Events.INTERACTION_FOCUS_CHANGED, {
+		"interaction_id": focused.interaction_id if focused else &"",
+		"prompt": focused.prompt_text if focused else "",
+	})
 
 
 ## Returns true if something was interacted with.
 func interact() -> bool:
 	if focused == null or not is_instance_valid(focused):
 		return false
-	return focused.try_interact(_actor)
+	var done := focused.try_interact(_actor)
+	if done and is_instance_valid(focused):
+		_publish_focus()  # the prompt may have changed ("Open" -> "Close")
+	return done
 
 
 func _find_actor() -> Actor:

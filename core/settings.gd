@@ -123,6 +123,10 @@ func apply_all() -> void:
 	)
 	# Only the Master bus exists until the Phase 8 audio layout adds the others.
 	AudioServer.set_bus_volume_db(0, linear_to_db(get_value("audio", "master")))
+	for pair: Array in [["Ambience", "sfx"], ["SFX", "sfx"], ["PA", "voice"]]:
+		var idx := AudioServer.get_bus_index(pair[0])
+		if idx != -1:
+			AudioServer.set_bus_volume_db(idx, linear_to_db(maxf(get_value("audio", pair[1]), 0.0001)))
 
 
 func _defaults_copy() -> Dictionary:

@@ -32,11 +32,15 @@ func test_shipped_data_is_valid_in_both_modes() -> void:
 	NarrativeDatabase.include_test_content = true
 	NarrativeDatabase.load_all()
 	eq(NarrativeDatabase.load_errors, [] as Array[String], "shipped data loads with no errors or warnings (incl. cross-refs)")
-	ok(NarrativeDatabase.count("dialogue") >= 1 and NarrativeDatabase.count("events") >= 8, "demo content present in debug mode")
+	ok(NarrativeDatabase.count("dialogue") >= 2 and NarrativeDatabase.count("events") >= 29, "demo + deck content present in debug mode")
 	NarrativeDatabase.include_test_content = false
 	NarrativeDatabase.load_all()
 	eq(NarrativeDatabase.count("characters"), 4, "the four crew profiles ship")
-	eq(NarrativeDatabase.count("dialogue") + NarrativeDatabase.count("recordings") + NarrativeDatabase.count("documents") + NarrativeDatabase.count("events"), 0, "release mode ships no demo content")
+	ok(NarrativeDatabase.get_dialogue(&"demo_scout_intro") == null and NarrativeDatabase.get_event(&"demo_ev_terminal") == null, "release mode hides the demo (canon: test) content")
+	ok(NarrativeDatabase.has_dialogue(&"deck_a_bridge_status") and NarrativeDatabase.has_recording(&"black_box_0811a") and NarrativeDatabase.has_document(&"flight_log_fragment"), "the Deck A content (canon: proposed) ships")
+	for kind in ["dialogue", "recordings", "documents", "events"]:
+		for entry in NarrativeDatabase.all_of(kind):
+			ok(entry.canon == "proposed" or entry.canon == "established", "%s '%s' is honestly marked (%s)" % [kind, entry.id, entry.canon])
 
 
 func test_crew_profiles_match_the_lore_bible_roles() -> void:

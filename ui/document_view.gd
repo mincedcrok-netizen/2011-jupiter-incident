@@ -66,7 +66,7 @@ func open_document(id: StringName) -> bool:
 	if doc == null or not NarrativeState.is_document_found(id):
 		return false
 	_open_id = id
-	_title.text = doc.title
+	_title.text = NarrativeText.resolve(doc.title)
 	var parts: Array[String] = [KIND_LABELS.get(doc.kind, doc.kind)]
 	if doc.author != "":
 		parts.append("FROM: " + RetroStyle.character_name(doc.author))
@@ -76,7 +76,7 @@ func open_document(id: StringName) -> bool:
 	var secret := doc.kind == "classified" or doc.classification != ""
 	_banner.text = ("*** CLASSIFIED %s ***" % doc.classification).strip_edges() if secret else ""
 	_banner.visible = secret
-	_body.text = doc.body
+	_body.text = NarrativeText.resolve(doc.body)
 	NarrativeState.mark_document_read(id)
 	GameManager.push_modal("document")
 	visible = true

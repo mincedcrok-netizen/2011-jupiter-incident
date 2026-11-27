@@ -11,12 +11,13 @@ script sits next to its scene/data, which keeps related files together and scrip
 | `core/` | Autoload services: EventBus, Net, SaveSystem, GameState, GameManager, Settings, SceneManager; plus `Events`, `InputActions`, `PhysicsLayers` |
 | `gameplay/` | Actors, player controller + scene, interaction, PlayerRegistry |
 | `narrative/` | Narrative data classes, `NarrativeDatabase`, `NarrativeState`, `DialogueManager`, `EventDirector`, `RecordingPlayer` (see `docs/NARRATIVE_ARCHITECTURE.md`) |
-| `ui/` | HUD, pause menu, and the narrative interface (`narrative_ui.gd` + dialogue/recording/document/archive/objectives/toast views, `retro_style.gd`) |
-| `scenes/` | `boot.tscn` entry; `scenes/core/gameplay_scene.gd` (root script for playable scenes); `scenes/test/` = **foundation test room (harness only, not the Phase 3 ship)** |
+| `ship/` | Environment kit: `RoomShell`, `ShipDoor`, props/interactables, lights, nav targets, space backdrop, audio (see `docs/ENVIRONMENT.md`) |
+| `ui/` | HUD (crosshair, prompt, objective waypoint, location tag), pause menu, and the narrative interface (`narrative_ui.gd` + dialogue/recording/document/archive/objectives/toast views, `retro_style.gd`) |
+| `scenes/` | `boot.tscn` entry (loads `scenes/ship/deck_a.tscn`); `scenes/core/gameplay_scene.gd` (root script for playable scenes); `scenes/test/` = **foundation test room (harness only, not the Phase 3 ship)** |
 | `data/` | Narrative JSON: `characters/` (proposed crew stand-ins) plus `dialogue/ recordings/ documents/ events/` (demo content, `canon: test`, debug builds only) |
 | `assets/` | `models/ textures/ audio/ materials/` (empty; created for later phases) |
-| `tests/` | Headless suites, rendered end-to-end driver, two-process restart check, fixtures |
-| `tools/` | `run_tests.sh`, `run_e2e.sh`, `restart_check.sh` |
+| `tests/` | Headless suites, rendered end-to-end drivers (`e2e_rendered.gd` room, `e2e_ship.gd` ship), two-process restart check, fixtures |
+| `tools/` | `run_tests.sh`, `run_e2e.sh`, `restart_check.sh`, `gen_deck_a.py` (level), `gen_audio.py` (placeholder sounds) |
 | `docs/` | Architecture, data formats, development log |
 
 No `resources/` folder yet (nothing needs it). Autoload order matters: EventBus, Net,
@@ -49,6 +50,7 @@ Defaults: WASD, Shift sprint, E interact, Tab archive, Esc pause (Esc first clos
 | Interactions (`Interactable`) | Authority performs | Remote requests are **not implemented** (Phase 7); they are refused with a warning |
 | Player movement/camera | The controlling peer | Remote players are not simulated locally |
 | Narrative state/events (`NarrativeState`, `EventDirector`, `DialogueManager`) | Authority | Mutators refuse on non-authority peers; views are local |
+| Doors (`ShipDoor`) | Authority performs | Lock state = story flag; open/closed state is local and not saved |
 | Pause / mouse capture / modals (`GameManager`) | Local | Co-op must not freeze the host's simulation; revisit in Phase 7 |
 | Narrative data (`NarrativeDatabase`) | Read-only everywhere | Unlocking recordings is authority-only (stored as flags) |
 | Settings | Local | Never replicated |

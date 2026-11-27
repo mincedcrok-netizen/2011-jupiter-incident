@@ -3,7 +3,7 @@ extends Node
 ## off to the first scene. If that fails, show a readable error instead of a blank
 ## window. (Main menu / continue-game flow arrives in later phases.)
 
-@export var first_scene: String = "res://scenes/test/foundation_room.tscn"
+@export var first_scene: String = "res://scenes/ship/deck_a.tscn"
 
 var error_label: Label = null
 

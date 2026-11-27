@@ -65,7 +65,7 @@ func _execute(ev: NarrativeEvent, a: Dictionary) -> void:
 		"set_character_state":
 			ok = NarrativeState.set_character_state(StringName(a["id"]), a["state"])
 		"set_objective":
-			ok = NarrativeState.set_objective(a["id"], a["text"])
+			ok = NarrativeState.set_objective(a["id"], a["text"], a.get("target", ""))
 		"complete_objective":
 			ok = NarrativeState.complete_objective(a["id"])
 		"notify":

@@ -50,4 +50,10 @@ func try_interact(actor: Actor) -> bool:
 		"actor_id": actor.actor_id,
 		"peer_id": actor.peer_id,
 	})
+	_on_interacted(actor)
 	return true
+
+
+## Override for object behaviour (doors, switches). Runs after INTERACTED was published.
+func _on_interacted(_actor: Actor) -> void:
+	pass

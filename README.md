@@ -9,11 +9,13 @@ WASD move, Shift sprint, mouse look, E interact / continue dialogue, 1-6 choose,
 
 ## Test
 - `GODOT=/path/to/godot tools/run_tests.sh` headless suites (non-zero exit on any failure or script error)
-- `GODOT=/path/to/godot tools/run_e2e.sh` real-window end-to-end run with screenshots (needs a display or Xvfb)
+- `GODOT=/path/to/godot tools/run_e2e.sh [dir] [room|ship|all]` real-window end-to-end runs with screenshots (needs a display or Xvfb; the ship run takes ~3 min under software rendering)
 - `GODOT=/path/to/godot tools/restart_check.sh` persistence across separate processes
 
 ## Docs
 - `docs/ARCHITECTURE.md` layout, game flow, rules, ownership and save format
+- `docs/ENVIRONMENT.md` the ship deck, kit and wayfinding
+- `docs/PROPOSED_LORE.md` **PROPOSED** lore awaiting approval (not canon)
 - `docs/NARRATIVE_ARCHITECTURE.md` narrative systems overview
 - `docs/DATA_FORMATS.md` narrative JSON formats
 - `docs/CHARACTER_STANDINS.md` what is established vs PROPOSED for the crew

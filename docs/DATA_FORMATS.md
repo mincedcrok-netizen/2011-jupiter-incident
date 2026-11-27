@@ -68,6 +68,7 @@ Dangling references (unknown speaker, unknown id in an event action, ...) load w
 `flag_changed`, `dialogue_ended`, `scene_change_completed`, `recording_played`, `document_read`, ...
 `match` fields must equal the payload's fields (compared as text). `once` (default true) fires the event
 at most once per save; it is only consumed when its conditions pass.
+Objectives can carry a waypoint: `set_objective{id,text,target}` where `target` is a `NavTarget` id (see `docs/ENVIRONMENT.md`).
 Actions: `set_flag{flag,value}`, `start_dialogue{id}`, `unlock_recording{id}`, `unlock_document{id}`,
 `open_document{id}`, `open_recording{id}`, `set_character_state{id,state}`, `set_objective{id,text}`,
 `complete_objective{id}`, `notify{text}`. A failing action is reported and the rest still run;
@@ -76,3 +77,8 @@ event chains are cut off at depth 8.
 ## Export note
 Exported builds must include `*.json` under `data/` (export preset "Resources to export
 non-resource files" filter) or the database will load empty. Handle in Phase 8.
+
+## Character tokens in text
+Any player-facing text (document titles/bodies, recording segments, dialogue, objectives, toasts, door prompts and
+in-world signs) may contain `{name:id}`, `{callsign:id}` or `{role:id}`; they resolve from `data/characters/*.json`
+(`NarrativeText.resolve`). Unknown ids are left as written. This keeps every character name in one file.

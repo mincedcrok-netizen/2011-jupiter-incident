@@ -19,6 +19,11 @@ const SUITES := [
 	"res://tests/test_narrative_ui.gd",
 	"res://tests/test_room_and_boot.gd",
 	"res://tests/test_hud.gd",
+	"res://tests/test_ship_layout.gd",
+	"res://tests/test_ship_doors.gd",
+	"res://tests/test_ship_navigation.gd",
+	"res://tests/test_ship_narrative.gd",
+	"res://tests/test_ship_atmosphere.gd",
 ]
 
 

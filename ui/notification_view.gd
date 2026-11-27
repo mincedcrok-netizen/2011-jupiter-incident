@@ -27,7 +27,7 @@ func show_toast(text: String) -> void:
 	var panel := PanelContainer.new()
 	panel.add_theme_stylebox_override("panel", RetroStyle.box(RetroStyle.ACCENT, RetroStyle.BG, 8))
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var l := RetroStyle.label(text, 15)
+	var l := RetroStyle.label(NarrativeText.resolve(text), 15)
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	panel.add_child(l)
 	_box.add_child(panel)

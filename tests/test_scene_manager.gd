@@ -46,5 +46,5 @@ func test_boot_scene_hands_off_to_first_scene() -> void:
 	tree.root.add_child(boot)
 	for i in 6:
 		await tree.process_frame
-	eq(SceneManager.current_scene_path, "res://scenes/test/foundation_room.tscn", "boot loaded the first scene")
+	eq(SceneManager.current_scene_path, "res://scenes/ship/deck_a.tscn", "boot loaded the first scene (the ship deck)")
 	boot.queue_free()

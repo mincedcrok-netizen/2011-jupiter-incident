@@ -141,16 +141,22 @@ func set_character_state(id: StringName, state: String) -> bool:
 
 # --- objectives --------------------------------------------------------------
 
-func set_objective(id: String, text: String) -> bool:
+## `target` (optional) is a NavTarget id the objective waypoint points at.
+func set_objective(id: String, text: String, target: String = "") -> bool:
 	if not Net.is_authority() or id.is_empty() or text.strip_edges().is_empty():
 		return false
 	for o in _objectives:
 		if o["id"] == id:
 			o["text"] = text  # reword an existing objective; completion is kept
+			if target != "":
+				o["target"] = target
 			return true
-	_objectives.append({"id": id, "text": text, "completed": false})
+	var entry := {"id": id, "text": text, "completed": false}
+	if target != "":
+		entry["target"] = target
+	_objectives.append(entry)
 	GameState.set_flag(StringName("objective_added:" + id), true)
-	EventBus.publish(Events.OBJECTIVE_CHANGED, {"id": id, "text": text, "kind": "added"})
+	EventBus.publish(Events.OBJECTIVE_CHANGED, {"id": id, "text": text, "kind": "added", "target": target})
 	return true
 
 
@@ -204,7 +210,10 @@ func deserialize(data: Dictionary) -> bool:
 		if not (o is Dictionary) or not (o.get("id") is String) or not (o.get("text") is String) \
 				or not (o.get("completed") is bool) or (o["id"] as String).is_empty():
 			return false
-		objs.append({"id": o["id"], "text": o["text"], "completed": o["completed"]})
+		var restored := {"id": o["id"], "text": o["text"], "completed": o["completed"]}
+		if o.get("target", "") is String and o.get("target", "") != "":
+			restored["target"] = o["target"]
+		objs.append(restored)
 	var done: Dictionary = {}
 	for e: Variant in data["completed_events"]:
 		if not (e is String) or (e as String).is_empty():

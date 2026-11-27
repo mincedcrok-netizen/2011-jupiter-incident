@@ -1,0 +1,973 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/core/gameplay_scene.gd" id="r1"]
+[ext_resource type="Script" path="res://ship/space_backdrop.gd" id="r2"]
+[ext_resource type="Script" path="res://ship/ship_ambience.gd" id="r3"]
+[ext_resource type="Script" path="res://ship/ship_announcer.gd" id="r4"]
+[ext_resource type="Script" path="res://ship/room_shell.gd" id="r5"]
+[ext_resource type="Script" path="res://ship/ship_door.gd" id="r6"]
+[ext_resource type="Script" path="res://ship/ship_prop.gd" id="r7"]
+[ext_resource type="Script" path="res://ship/flicker_light.gd" id="r8"]
+[ext_resource type="Script" path="res://ship/spatial_emitter.gd" id="r9"]
+[ext_resource type="Script" path="res://ship/ship_interactable.gd" id="r10"]
+[ext_resource type="Script" path="res://ship/nav_target.gd" id="r11"]
+[ext_resource type="PackedScene" path="res://gameplay/player/player.tscn" id="r12"]
+[ext_resource type="PackedScene" path="res://ui/hud.tscn" id="r13"]
+
+[node name="DeckA" type="Node3D"]
+script = ExtResource("r1")
+
+[node name="Backdrop" type="Node3D" parent="."]
+script = ExtResource("r2")
+
+[node name="Ambience" type="Node" parent="."]
+script = ExtResource("r3")
+
+[node name="Announcer" type="Node" parent="."]
+script = ExtResource("r4")
+messages = PackedStringArray("Attention all crew: structural monitoring reports irregular pressure in Section B.", "Reminder: emergency evacuation procedures are posted in the crew quarters.", "Warning: unidentified interference on all communication channels.", "Attention: engine core access remains sealed.")
+
+[node name="Rooms" type="Node3D" parent="."]
+
+[node name="Doors" type="Node3D" parent="."]
+
+[node name="Nav" type="Node3D" parent="."]
+
+[node name="MainCorridor" type="Node3D" parent="Rooms"]
+script = ExtResource("r5")
+position = Vector3(0, 0, 0)
+room_id = &"corridor"
+display_name = "Deck A: Main Corridor"
+zone = &"corridor"
+size = Vector3(5, 3.4, 40)
+openings = [{"side": "north", "offset": 0.0, "width": 2.4, "height": 2.7, "kind": "door", "label": "COMMAND BRIDGE"}, {"side": "south", "offset": 0.0, "width": 2.4, "height": 2.7, "kind": "door", "label": "SECTION B  >  ENGINEERING"}, {"side": "west", "offset": -8.0, "width": 2.4, "height": 2.7, "kind": "door", "label": "CREW QUARTERS"}, {"side": "east", "offset": 4.0, "width": 2.4, "height": 2.7, "kind": "door", "label": "SUPPLY ROOM"}]
+
+[node name="CommandBridge" type="Node3D" parent="Rooms"]
+script = ExtResource("r5")
+position = Vector3(0, 0, -27)
+room_id = &"bridge"
+display_name = "Command Bridge"
+zone = &"bridge"
+size = Vector3(16, 4.4, 14)
+openings = [{"side": "south", "offset": 0.0, "width": 2.4, "height": 2.7, "kind": "door", "label": "MAIN CORRIDOR"}, {"side": "north", "offset": 0.0, "width": 8.0, "height": 3.6, "sill": 0.9, "kind": "window"}]
+
+[node name="CrewQuarters" type="Node3D" parent="Rooms"]
+script = ExtResource("r5")
+position = Vector3(-7.5, 0, -8)
+room_id = &"quarters"
+display_name = "Crew Quarters"
+zone = &"quarters"
+size = Vector3(10, 3.4, 12)
+openings = [{"side": "east", "offset": 0.0, "width": 2.4, "height": 2.7, "kind": "door", "label": "MAIN CORRIDOR"}]
+
+[node name="SupplyRoom" type="Node3D" parent="Rooms"]
+script = ExtResource("r5")
+position = Vector3(7.5, 0, 4)
+room_id = &"storage"
+display_name = "Supply Room"
+zone = &"storage"
+size = Vector3(10, 3.4, 12)
+openings = [{"side": "west", "offset": 0.0, "width": 2.4, "height": 2.7, "kind": "door", "label": "MAIN CORRIDOR"}]
+
+[node name="SectionB" type="Node3D" parent="Rooms"]
+script = ExtResource("r5")
+position = Vector3(0, 0, 27)
+room_id = &"damaged"
+display_name = "Section B (Damaged)"
+zone = &"damaged"
+size = Vector3(5, 3.4, 14)
+openings = [{"side": "north", "offset": 0.0, "width": 2.4, "height": 2.7, "kind": "door", "label": "MAIN CORRIDOR"}, {"side": "south", "offset": 0.0, "width": 2.4, "height": 2.7, "kind": "door", "label": "ENGINEERING ACCESS"}]
+
+[node name="EngineeringAccess" type="Node3D" parent="Rooms"]
+script = ExtResource("r5")
+position = Vector3(0, 0, 42)
+room_id = &"engineering"
+display_name = "Engineering Access Corridor"
+zone = &"engineering"
+size = Vector3(4, 3.4, 16)
+openings = [{"side": "north", "offset": 0.0, "width": 2.4, "height": 2.7, "kind": "door", "label": "SECTION B"}, {"side": "south", "offset": 0.0, "width": 3.0, "height": 3.0, "kind": "door", "label": "ENGINE CORE  [SEALED]"}]
+
+[node name="DoorBridge" type="StaticBody3D" parent="Doors"]
+script = ExtResource("r6")
+position = Vector3(0, 0, -20)
+door_id = &"bridge"
+destination_label = "Command Bridge"
+opening_size = Vector2(2.4, 2.7)
+
+[node name="DoorQuarters" type="StaticBody3D" parent="Doors"]
+script = ExtResource("r6")
+position = Vector3(-2.5, 0, -8)
+door_id = &"quarters"
+destination_label = "Crew Quarters"
+opening_size = Vector2(2.4, 2.7)
+rotation_degrees = Vector3(0, 90, 0)
+
+[node name="DoorSupply" type="StaticBody3D" parent="Doors"]
+script = ExtResource("r6")
+position = Vector3(2.5, 0, 4)
+door_id = &"supply"
+destination_label = "Supply Room"
+opening_size = Vector2(2.4, 2.7)
+rotation_degrees = Vector3(0, 90, 0)
+
+[node name="DoorSectionB" type="StaticBody3D" parent="Doors"]
+script = ExtResource("r6")
+position = Vector3(0, 0, 20)
+door_id = &"section_b"
+destination_label = "Section B"
+opening_size = Vector2(2.4, 2.7)
+locked_by_default = true
+lock_reason = "LOCKED: Section B emergency lock engaged. Release it at the bridge status terminal."
+
+[node name="DoorEngineering" type="StaticBody3D" parent="Doors"]
+script = ExtResource("r6")
+position = Vector3(0, 0, 34)
+door_id = &"engineering"
+destination_label = "Engineering Access"
+opening_size = Vector2(2.4, 2.7)
+
+[node name="DoorEngineCore" type="StaticBody3D" parent="Doors"]
+script = ExtResource("r6")
+position = Vector3(0, 0, 49.8)
+door_id = &"engine_core"
+destination_label = "Engine Core"
+opening_size = Vector2(3, 3)
+sealed = true
+lock_reason = "ACCESS DENIED: engine core sealed under emergency protocol. Override credentials required."
+
+[node name="EngineCoreBacking" type="Node3D" parent="Doors"]
+script = ExtResource("r7")
+position = Vector3(0, 0, 50)
+kind = "blast_backing"
+
+[node name="Light0" type="OmniLight3D" parent="Rooms/MainCorridor"]
+script = ExtResource("r8")
+position = Vector3(0, 3, -15)
+light_color = Color(0.75, 0.9, 1, 1)
+light_energy = 1
+omni_range = 9.5
+base_energy = 1
+mode = "steady"
+active_distance = 30
+phase = 0
+
+[node name="Light1" type="OmniLight3D" parent="Rooms/MainCorridor"]
+script = ExtResource("r8")
+position = Vector3(0, 3, -5)
+light_color = Color(0.75, 0.9, 1, 1)
+light_energy = 1
+omni_range = 9.5
+base_energy = 1
+mode = "flicker"
+active_distance = 30
+phase = 0
+
+[node name="Light2" type="OmniLight3D" parent="Rooms/MainCorridor"]
+script = ExtResource("r8")
+position = Vector3(0, 3, 5)
+light_color = Color(0.75, 0.9, 1, 1)
+light_energy = 1
+omni_range = 9.5
+base_energy = 1
+mode = "steady"
+active_distance = 30
+phase = 0
+
+[node name="Light3" type="OmniLight3D" parent="Rooms/MainCorridor"]
+script = ExtResource("r8")
+position = Vector3(0, 3, 15)
+light_color = Color(0.75, 0.9, 1, 1)
+light_energy = 1
+omni_range = 9.5
+base_energy = 1
+mode = "dying"
+active_distance = 30
+phase = 1.7
+
+[node name="EmergencyNorth" type="OmniLight3D" parent="Rooms/MainCorridor"]
+script = ExtResource("r8")
+position = Vector3(0, 2.9, -17.5)
+light_color = Color(1, 0.18, 0.12, 1)
+light_energy = 1.4
+omni_range = 6
+base_energy = 1.4
+mode = "pulse"
+active_distance = 30
+phase = 0
+
+[node name="EmergencySouth" type="OmniLight3D" parent="Rooms/MainCorridor"]
+script = ExtResource("r8")
+position = Vector3(0, 2.9, 11)
+light_color = Color(1, 0.18, 0.12, 1)
+light_energy = 1.4
+omni_range = 6
+base_energy = 1.4
+mode = "pulse"
+active_distance = 30
+phase = 1.4
+
+[node name="LineBlue" type="Node3D" parent="Rooms/MainCorridor"]
+script = ExtResource("r7")
+position = Vector3(-0.8, 0, -10)
+kind = "floor_line"
+length = 18
+color = Color(0.3, 0.6, 1, 1)
+
+[node name="LineOrange" type="Node3D" parent="Rooms/MainCorridor"]
+script = ExtResource("r7")
+position = Vector3(0.8, 0, 10.5)
+kind = "floor_line"
+length = 18
+color = Color(1, 0.5, 0.1, 1)
+
+[node name="StubAmber" type="Node3D" parent="Rooms/MainCorridor"]
+script = ExtResource("r7")
+position = Vector3(-1.55, 0, -8)
+kind = "floor_line"
+rotation_degrees = Vector3(0, 90, 0)
+length = 1.5
+color = Color(1, 0.62, 0.2, 1)
+
+[node name="StubGreen" type="Node3D" parent="Rooms/MainCorridor"]
+script = ExtResource("r7")
+position = Vector3(1.55, 0, 4)
+kind = "floor_line"
+rotation_degrees = Vector3(0, 90, 0)
+length = 1.5
+color = Color(0.3, 1, 0.5, 1)
+
+[node name="SignDeck" type="Node3D" parent="Rooms/MainCorridor"]
+script = ExtResource("r7")
+position = Vector3(-2.08, 2.1, -16)
+kind = "sign"
+rotation_degrees = Vector3(0, 90, 0)
+text = "DECK A\nMAIN CORRIDOR"
+color = Color(0.2, 0.85, 1, 1)
+
+[node name="SignOnAir" type="Node3D" parent="Rooms/MainCorridor"]
+script = ExtResource("r7")
+position = Vector3(2.08, 2.1, -13)
+kind = "sign"
+rotation_degrees = Vector3(0, -90, 0)
+text = "ON AIR\nAPOLLO-MEME LIVE"
+color = Color(1, 0.25, 0.2, 1)
+
+[node name="SignDrill" type="Node3D" parent="Rooms/MainCorridor"]
+script = ExtResource("r7")
+position = Vector3(-2.08, 2, 1)
+kind = "sign"
+rotation_degrees = Vector3(0, 90, 0)
+text = "EVACUATION DRILL\n1 SUIT UP\n2 GRAB GO-BAG\n3 PROCEED TO PODS"
+color = Color(1, 0.85, 0.2, 1)
+
+[node name="GoBags" type="Node3D" parent="Rooms/MainCorridor"]
+script = ExtResource("r7")
+position = Vector3(-1.55, 0, -12.2)
+kind = "duffel_bags"
+rotation_degrees = Vector3(0, 90, 0)
+seed_value = 3
+
+[node name="VentEast" type="Node3D" parent="Rooms/MainCorridor"]
+script = ExtResource("r7")
+position = Vector3(2.07, 0.9, 14)
+kind = "vent_grille"
+rotation_degrees = Vector3(0, -90, 0)
+
+[node name="ScorchSouth" type="Node3D" parent="Rooms/MainCorridor"]
+script = ExtResource("r7")
+position = Vector3(-2.08, 1.6, 17.5)
+kind = "scorch"
+rotation_degrees = Vector3(0, 90, 0)
+length = 1
+seed_value = 4
+
+[node name="VentSound" type="AudioStreamPlayer3D" parent="Rooms/MainCorridor"]
+script = ExtResource("r9")
+position = Vector3(2, 1.2, 14)
+sound = &"vent_loop"
+emitter_volume_db = -7
+range_m = 12
+
+[node name="WireCrackle" type="AudioStreamPlayer3D" parent="Rooms/MainCorridor"]
+script = ExtResource("r9")
+position = Vector3(0, 3, -5)
+sound = &"electrical_crackle"
+emitter_volume_db = -14
+range_m = 9
+
+[node name="BridgeMain" type="OmniLight3D" parent="Rooms/CommandBridge"]
+script = ExtResource("r8")
+position = Vector3(0, 4, 0)
+light_color = Color(0.7, 0.8, 1, 1)
+light_energy = 1.3
+omni_range = 14
+base_energy = 1.3
+mode = "steady"
+active_distance = 18
+phase = 0
+shadow_enabled = true
+
+[node name="PlanetGlowL" type="OmniLight3D" parent="Rooms/CommandBridge"]
+script = ExtResource("r8")
+position = Vector3(-5, 3.6, -4)
+light_color = Color(1, 0.55, 0.25, 1)
+light_energy = 0.7
+omni_range = 8
+base_energy = 0.7
+mode = "steady"
+active_distance = 30
+phase = 0
+
+[node name="PlanetGlowR" type="OmniLight3D" parent="Rooms/CommandBridge"]
+script = ExtResource("r8")
+position = Vector3(5, 3.6, -4)
+light_color = Color(1, 0.55, 0.25, 1)
+light_energy = 0.7
+omni_range = 8
+base_energy = 0.7
+mode = "steady"
+active_distance = 30
+phase = 0
+
+[node name="BridgeEmergency" type="OmniLight3D" parent="Rooms/CommandBridge"]
+script = ExtResource("r8")
+position = Vector3(0, 4.1, 5)
+light_color = Color(1, 0.18, 0.12, 1)
+light_energy = 1
+omni_range = 6
+base_energy = 1
+mode = "pulse"
+active_distance = 30
+phase = 0.6
+
+[node name="BridgeDying" type="OmniLight3D" parent="Rooms/CommandBridge"]
+script = ExtResource("r8")
+position = Vector3(-6, 3.6, 3)
+light_color = Color(0.8, 0.9, 1, 1)
+light_energy = 0.8
+omni_range = 5
+base_energy = 0.8
+mode = "dying"
+active_distance = 30
+phase = 2.3
+
+[node name="ChairCommand" type="Node3D" parent="Rooms/CommandBridge"]
+script = ExtResource("r7")
+position = Vector3(0, 0, 1)
+kind = "command_chair"
+
+[node name="BankNW" type="Node3D" parent="Rooms/CommandBridge"]
+script = ExtResource("r7")
+position = Vector3(-6, 0, -6.1)
+kind = "console_bank"
+length = 3
+seed_value = 1
+
+[node name="BankNE" type="Node3D" parent="Rooms/CommandBridge"]
+script = ExtResource("r7")
+position = Vector3(6, 0, -6.1)
+kind = "console_bank"
+length = 3
+seed_value = 2
+
+[node name="BankWest" type="Node3D" parent="Rooms/CommandBridge"]
+script = ExtResource("r7")
+position = Vector3(-7.05, 0, 0.5)
+kind = "console_bank"
+rotation_degrees = Vector3(0, 90, 0)
+length = 6
+seed_value = 3
+
+[node name="BankEast" type="Node3D" parent="Rooms/CommandBridge"]
+script = ExtResource("r7")
+position = Vector3(7.05, 0, -0.5)
+kind = "console_bank"
+rotation_degrees = Vector3(0, -90, 0)
+length = 6
+seed_value = 4
+
+[node name="SignFlight" type="Node3D" parent="Rooms/CommandBridge"]
+script = ExtResource("r7")
+position = Vector3(-3, 2.7, -4.6)
+kind = "sign"
+text = "FLIGHT DECK\nHELM STATION"
+color = Color(0.55, 0.8, 1, 1)
+
+[node name="SignSponsor" type="Node3D" parent="Rooms/CommandBridge"]
+script = ExtResource("r7")
+position = Vector3(-7.55, 2.8, -3)
+kind = "sign"
+rotation_degrees = Vector3(0, 90, 0)
+text = "SPONSORED FLIGHT\nTHANKS FOR WATCHING"
+color = Color(1, 0.8, 0.3, 1)
+
+[node name="CameraRig" type="Node3D" parent="Rooms/CommandBridge"]
+script = ExtResource("r7")
+position = Vector3(-1.8, 0, 3.8)
+kind = "camera_rig"
+
+[node name="ScorchBank" type="Node3D" parent="Rooms/CommandBridge"]
+script = ExtResource("r7")
+position = Vector3(-7.58, 1.5, 3.2)
+kind = "scorch"
+rotation_degrees = Vector3(0, 90, 0)
+length = 1.2
+seed_value = 7
+
+[node name="SparksBank" type="Node3D" parent="Rooms/CommandBridge"]
+script = ExtResource("r7")
+position = Vector3(-7, 1.4, 3.2)
+kind = "sparks"
+
+[node name="StatusTerminal" type="StaticBody3D" parent="Rooms/CommandBridge"]
+script = ExtResource("r10")
+position = Vector3(3.2, 0, -5.4)
+kind = "terminal"
+interaction_id = &"bridge_status_terminal"
+prompt_text = "Use bridge status terminal"
+
+[node name="FlightConsole" type="StaticBody3D" parent="Rooms/CommandBridge"]
+script = ExtResource("r10")
+position = Vector3(-3, 0, -5.4)
+kind = "terminal"
+interaction_id = &"bridge_flight_console"
+prompt_text = "Read flight deck log"
+
+[node name="BlackBox" type="StaticBody3D" parent="Rooms/CommandBridge"]
+script = ExtResource("r10")
+position = Vector3(6.5, 0.95, 1.9)
+kind = "black_box"
+interaction_id = &"bridge_black_box"
+prompt_text = "Examine black-box recorder"
+rotation_degrees = Vector3(0, -90, 0)
+
+[node name="ConsoleCrackle" type="AudioStreamPlayer3D" parent="Rooms/CommandBridge"]
+script = ExtResource("r9")
+position = Vector3(-7, 1.4, 3.2)
+sound = &"electrical_crackle"
+emitter_volume_db = -9
+range_m = 10
+
+[node name="QuartersMain" type="OmniLight3D" parent="Rooms/CrewQuarters"]
+script = ExtResource("r8")
+position = Vector3(0, 3, 0)
+light_color = Color(1, 0.7, 0.4, 1)
+light_energy = 0.9
+omni_range = 10
+base_energy = 0.9
+mode = "steady"
+active_distance = 30
+phase = 0
+
+[node name="QuartersLamp" type="OmniLight3D" parent="Rooms/CrewQuarters"]
+script = ExtResource("r8")
+position = Vector3(-3.3, 1.9, 0)
+light_color = Color(1, 0.8, 0.5, 1)
+light_energy = 0.6
+omni_range = 4.5
+base_energy = 0.6
+mode = "flicker"
+active_distance = 30
+phase = 3
+
+[node name="BunkA" type="Node3D" parent="Rooms/CrewQuarters"]
+script = ExtResource("r7")
+position = Vector3(-4, 0, -2.8)
+kind = "bunk"
+rotation_degrees = Vector3(0, 90, 0)
+
+[node name="BunkB" type="Node3D" parent="Rooms/CrewQuarters"]
+script = ExtResource("r7")
+position = Vector3(-4, 0, 2.8)
+kind = "bunk"
+rotation_degrees = Vector3(0, 90, 0)
+
+[node name="Table" type="Node3D" parent="Rooms/CrewQuarters"]
+script = ExtResource("r7")
+position = Vector3(0.8, 0, 2.6)
+kind = "table"
+seed_value = 5
+
+[node name="LockersEast" type="Node3D" parent="Rooms/CrewQuarters"]
+script = ExtResource("r7")
+position = Vector3(4.55, 0, -3.5)
+kind = "locker_row"
+rotation_degrees = Vector3(0, -90, 0)
+
+[node name="GoBagsQ" type="Node3D" parent="Rooms/CrewQuarters"]
+script = ExtResource("r7")
+position = Vector3(3.8, 0, 3.8)
+kind = "duffel_bags"
+seed_value = 6
+
+[node name="SignEvac" type="Node3D" parent="Rooms/CrewQuarters"]
+script = ExtResource("r7")
+position = Vector3(4.58, 1.9, 1)
+kind = "sign"
+rotation_degrees = Vector3(0, -90, 0)
+text = "EVACUATION DRILL CHECKLIST\n1 SUIT UP\n2 GRAB GO-BAG\n3 PROCEED TO PODS"
+color = Color(1, 0.85, 0.2, 1)
+
+[node name="Locker_commander" type="StaticBody3D" parent="Rooms/CrewQuarters"]
+script = ExtResource("r10")
+position = Vector3(-3.6, 0, -5.3)
+kind = "footlocker"
+interaction_id = &"quarters_locker_commander"
+prompt_text = "Open footlocker"
+
+[node name="Plate_commander" type="Node3D" parent="Rooms/CrewQuarters"]
+script = ExtResource("r7")
+position = Vector3(-3.6, 1, -5.57)
+kind = "sign"
+text = "{callsign:commander}"
+color = Color(1, 0.7, 0.3, 1)
+
+[node name="Locker_scout" type="StaticBody3D" parent="Rooms/CrewQuarters"]
+script = ExtResource("r10")
+position = Vector3(-1.2, 0, -5.3)
+kind = "footlocker"
+interaction_id = &"quarters_locker_scout"
+prompt_text = "Open footlocker"
+
+[node name="Plate_scout" type="Node3D" parent="Rooms/CrewQuarters"]
+script = ExtResource("r7")
+position = Vector3(-1.2, 1, -5.57)
+kind = "sign"
+text = "{callsign:scout}"
+color = Color(1, 0.7, 0.3, 1)
+
+[node name="Locker_pilot" type="StaticBody3D" parent="Rooms/CrewQuarters"]
+script = ExtResource("r10")
+position = Vector3(1.2, 0, -5.3)
+kind = "footlocker"
+interaction_id = &"quarters_locker_pilot"
+prompt_text = "Open footlocker"
+
+[node name="Plate_pilot" type="Node3D" parent="Rooms/CrewQuarters"]
+script = ExtResource("r7")
+position = Vector3(1.2, 1, -5.57)
+kind = "sign"
+text = "{callsign:pilot}"
+color = Color(1, 0.7, 0.3, 1)
+
+[node name="Locker_quartermaster" type="StaticBody3D" parent="Rooms/CrewQuarters"]
+script = ExtResource("r10")
+position = Vector3(3.6, 0, -5.3)
+kind = "footlocker"
+interaction_id = &"quarters_locker_quartermaster"
+prompt_text = "Open footlocker"
+
+[node name="Plate_quartermaster" type="Node3D" parent="Rooms/CrewQuarters"]
+script = ExtResource("r7")
+position = Vector3(3.6, 1, -5.57)
+kind = "sign"
+text = "{callsign:quartermaster}"
+color = Color(1, 0.7, 0.3, 1)
+
+[node name="CassetteRadio" type="StaticBody3D" parent="Rooms/CrewQuarters"]
+script = ExtResource("r10")
+position = Vector3(0.8, 0.78, 2.6)
+kind = "radio"
+interaction_id = &"quarters_radio"
+prompt_text = "Play cassette"
+
+[node name="QuartersVent" type="AudioStreamPlayer3D" parent="Rooms/CrewQuarters"]
+script = ExtResource("r9")
+position = Vector3(0, 3, -5)
+sound = &"vent_loop"
+emitter_volume_db = -14
+range_m = 9
+
+[node name="SupplyMain" type="OmniLight3D" parent="Rooms/SupplyRoom"]
+script = ExtResource("r8")
+position = Vector3(0, 3, -2)
+light_color = Color(0.8, 1, 0.85, 1)
+light_energy = 0.9
+omni_range = 9
+base_energy = 0.9
+mode = "steady"
+active_distance = 30
+phase = 0
+
+[node name="SupplyFlicker" type="OmniLight3D" parent="Rooms/SupplyRoom"]
+script = ExtResource("r8")
+position = Vector3(0, 3, 3.5)
+light_color = Color(0.8, 1, 0.85, 1)
+light_energy = 0.9
+omni_range = 9
+base_energy = 0.9
+mode = "flicker"
+active_distance = 30
+phase = 5
+
+[node name="ShelfE0" type="Node3D" parent="Rooms/SupplyRoom"]
+script = ExtResource("r7")
+position = Vector3(4.3, 0, -4)
+kind = "shelving"
+rotation_degrees = Vector3(0, -90, 0)
+seed_value = 10
+
+[node name="ShelfE1" type="Node3D" parent="Rooms/SupplyRoom"]
+script = ExtResource("r7")
+position = Vector3(4.3, 0, -1.9)
+kind = "shelving"
+rotation_degrees = Vector3(0, -90, 0)
+seed_value = 11
+
+[node name="ShelfE2" type="Node3D" parent="Rooms/SupplyRoom"]
+script = ExtResource("r7")
+position = Vector3(4.3, 0, 0.2)
+kind = "shelving"
+rotation_degrees = Vector3(0, -90, 0)
+seed_value = 12
+
+[node name="Shelf_N" type="Node3D" parent="Rooms/SupplyRoom"]
+script = ExtResource("r7")
+position = Vector3(-1.5, 0, -5.3)
+kind = "shelving"
+seed_value = 20
+
+[node name="CratesA" type="Node3D" parent="Rooms/SupplyRoom"]
+script = ExtResource("r7")
+position = Vector3(-3.2, 0, 3.6)
+kind = "crate_stack"
+seed_value = 31
+
+[node name="CratesB" type="Node3D" parent="Rooms/SupplyRoom"]
+script = ExtResource("r7")
+position = Vector3(0.8, 0, 4.4)
+kind = "crate_stack"
+rotation_degrees = Vector3(0, 90, 0)
+seed_value = 32
+
+[node name="CratesC" type="Node3D" parent="Rooms/SupplyRoom"]
+script = ExtResource("r7")
+position = Vector3(2, 0, -3.2)
+kind = "crate_stack"
+seed_value = 33
+
+[node name="SignPods" type="Node3D" parent="Rooms/SupplyRoom"]
+script = ExtResource("r7")
+position = Vector3(-4.58, 2.1, 3.5)
+kind = "sign"
+rotation_degrees = Vector3(0, 90, 0)
+text = "ESCAPE POD STAGING\nGO-BAGS COLLECT HERE"
+color = Color(0.3, 1, 0.5, 1)
+
+[node name="ManifestTerminal" type="StaticBody3D" parent="Rooms/SupplyRoom"]
+script = ExtResource("r10")
+position = Vector3(4.1, 0, 3.2)
+kind = "terminal"
+interaction_id = &"storage_manifest_terminal"
+prompt_text = "Read supply manifest"
+rotation_degrees = Vector3(0, -90, 0)
+
+[node name="PodChecklist" type="StaticBody3D" parent="Rooms/SupplyRoom"]
+script = ExtResource("r10")
+position = Vector3(-4.3, 0, -3.2)
+kind = "pad"
+interaction_id = &"storage_pod_checklist"
+prompt_text = "Read pod checklist"
+rotation_degrees = Vector3(0, 90, 0)
+
+[node name="BatteryCrate" type="StaticBody3D" parent="Rooms/SupplyRoom"]
+script = ExtResource("r10")
+position = Vector3(-2.2, 0, 1.2)
+kind = "crate_open"
+interaction_id = &"storage_battery_crate"
+prompt_text = "Check supply crate"
+one_shot = true
+
+[node name="SupplyVent" type="AudioStreamPlayer3D" parent="Rooms/SupplyRoom"]
+script = ExtResource("r9")
+position = Vector3(2, 3, 0)
+sound = &"vent_loop"
+emitter_volume_db = -14
+range_m = 9
+
+[node name="DamagedRed" type="OmniLight3D" parent="Rooms/SectionB"]
+script = ExtResource("r8")
+position = Vector3(0, 3, -2)
+light_color = Color(1, 0.18, 0.12, 1)
+light_energy = 1.5
+omni_range = 8
+base_energy = 1.5
+mode = "pulse"
+active_distance = 30
+phase = 0.3
+
+[node name="DamagedDying" type="OmniLight3D" parent="Rooms/SectionB"]
+script = ExtResource("r8")
+position = Vector3(0, 3, 3)
+light_color = Color(0.9, 0.45, 0.3, 1)
+light_energy = 0.8
+omni_range = 8
+base_energy = 0.8
+mode = "dying"
+active_distance = 30
+phase = 2
+
+[node name="DamagedStrobe" type="OmniLight3D" parent="Rooms/SectionB"]
+script = ExtResource("r8")
+position = Vector3(0, 3.1, 6)
+light_color = Color(1, 0.18, 0.12, 1)
+light_energy = 1
+omni_range = 6
+base_energy = 1
+mode = "strobe"
+active_distance = 30
+phase = 0
+
+[node name="Panel0" type="Node3D" parent="Rooms/SectionB"]
+script = ExtResource("r7")
+position = Vector3(0.8, 3.15, -3)
+kind = "hanging_panel"
+seed_value = 1
+
+[node name="Panel1" type="Node3D" parent="Rooms/SectionB"]
+script = ExtResource("r7")
+position = Vector3(-0.5, 3.25, 2)
+kind = "hanging_panel"
+seed_value = 2
+
+[node name="Panel2" type="Node3D" parent="Rooms/SectionB"]
+script = ExtResource("r7")
+position = Vector3(0.3, 3.2, 5)
+kind = "hanging_panel"
+seed_value = 3
+
+[node name="Debris0" type="Node3D" parent="Rooms/SectionB"]
+script = ExtResource("r7")
+position = Vector3(-1.4, 0, -4)
+kind = "debris_pile"
+seed_value = 40
+
+[node name="Debris1" type="Node3D" parent="Rooms/SectionB"]
+script = ExtResource("r7")
+position = Vector3(1.4, 0, 0)
+kind = "debris_pile"
+seed_value = 41
+
+[node name="Debris2" type="Node3D" parent="Rooms/SectionB"]
+script = ExtResource("r7")
+position = Vector3(-1.4, 0, 4)
+kind = "debris_pile"
+seed_value = 42
+
+[node name="BrokenVent" type="Node3D" parent="Rooms/SectionB"]
+script = ExtResource("r7")
+position = Vector3(-2.07, 1, -1)
+kind = "vent_grille"
+rotation_degrees = Vector3(0, 90, 0)
+text = "broken"
+
+[node name="ShardsVent" type="Node3D" parent="Rooms/SectionB"]
+script = ExtResource("r7")
+position = Vector3(-1.75, 0, -1)
+kind = "shard_cluster"
+seed_value = 51
+
+[node name="ShardsFloorA" type="Node3D" parent="Rooms/SectionB"]
+script = ExtResource("r7")
+position = Vector3(1.7, 0, 3)
+kind = "shard_cluster"
+seed_value = 52
+
+[node name="ShardsFloorB" type="Node3D" parent="Rooms/SectionB"]
+script = ExtResource("r7")
+position = Vector3(-1.8, 0, 5.6)
+kind = "shard_cluster"
+seed_value = 53
+
+[node name="ScorchEast" type="Node3D" parent="Rooms/SectionB"]
+script = ExtResource("r7")
+position = Vector3(2.09, 1.5, -3)
+kind = "scorch"
+rotation_degrees = Vector3(0, -90, 0)
+length = 1.4
+seed_value = 8
+
+[node name="SignDamage" type="Node3D" parent="Rooms/SectionB"]
+script = ExtResource("r7")
+position = Vector3(2.08, 2.2, 3)
+kind = "sign"
+rotation_degrees = Vector3(0, -90, 0)
+text = "SECTION B\nSTRUCTURAL FAILURE\nPRESSURE IRREGULAR"
+color = Color(1, 0.25, 0.2, 1)
+
+[node name="SparksA" type="Node3D" parent="Rooms/SectionB"]
+script = ExtResource("r7")
+position = Vector3(0, 3.2, 1)
+kind = "sparks"
+
+[node name="SparksB" type="Node3D" parent="Rooms/SectionB"]
+script = ExtResource("r7")
+position = Vector3(1.9, 1.9, -3)
+kind = "sparks"
+
+[node name="CorruptedTerminal" type="StaticBody3D" parent="Rooms/SectionB"]
+script = ExtResource("r10")
+position = Vector3(1.85, 0, -3)
+kind = "terminal_damaged"
+interaction_id = &"damaged_terminal"
+prompt_text = "Use terminal (corrupted)"
+rotation_degrees = Vector3(0, -90, 0)
+
+[node name="KeyShard" type="StaticBody3D" parent="Rooms/SectionB"]
+script = ExtResource("r10")
+position = Vector3(1.2, 0, 5.4)
+kind = "crystal"
+interaction_id = &"damaged_shard"
+prompt_text = "Examine shard"
+one_shot = true
+
+[node name="DamagedCrackle" type="AudioStreamPlayer3D" parent="Rooms/SectionB"]
+script = ExtResource("r9")
+position = Vector3(1.9, 2, -3)
+sound = &"electrical_crackle"
+emitter_volume_db = -6
+range_m = 12
+
+[node name="DamagedAlarm" type="AudioStreamPlayer3D" parent="Rooms/SectionB"]
+script = ExtResource("r9")
+position = Vector3(0, 3, 4)
+sound = &"alarm_loop"
+emitter_volume_db = -22
+range_m = 9
+
+[node name="EngA" type="OmniLight3D" parent="Rooms/EngineeringAccess"]
+script = ExtResource("r8")
+position = Vector3(0, 3, -4)
+light_color = Color(1, 0.55, 0.2, 1)
+light_energy = 1.1
+omni_range = 8.5
+base_energy = 1.1
+mode = "steady"
+active_distance = 30
+phase = 0
+
+[node name="EngB" type="OmniLight3D" parent="Rooms/EngineeringAccess"]
+script = ExtResource("r8")
+position = Vector3(0, 3, 2.5)
+light_color = Color(1, 0.55, 0.2, 1)
+light_energy = 1.1
+omni_range = 8.5
+base_energy = 1.1
+mode = "flicker"
+active_distance = 30
+phase = 4
+
+[node name="EngStrobe" type="OmniLight3D" parent="Rooms/EngineeringAccess"]
+script = ExtResource("r8")
+position = Vector3(0, 3, 6.8)
+light_color = Color(1, 0.35, 0.1, 1)
+light_energy = 1
+omni_range = 6
+base_energy = 1
+mode = "strobe"
+active_distance = 30
+phase = 0.5
+
+[node name="PipeTopW" type="Node3D" parent="Rooms/EngineeringAccess"]
+script = ExtResource("r7")
+position = Vector3(-1.45, 2.55, 0)
+kind = "pipe_run"
+length = 14
+
+[node name="PipeTopE" type="Node3D" parent="Rooms/EngineeringAccess"]
+script = ExtResource("r7")
+position = Vector3(1.45, 2.55, 0)
+kind = "pipe_run"
+length = 14
+
+[node name="PipeLowW" type="Node3D" parent="Rooms/EngineeringAccess"]
+script = ExtResource("r7")
+position = Vector3(-1.5, 0.45, 0)
+kind = "pipe_run"
+length = 14
+
+[node name="HazardW" type="Node3D" parent="Rooms/EngineeringAccess"]
+script = ExtResource("r7")
+position = Vector3(-1.05, 0, 0)
+kind = "hazard_band"
+length = 14
+
+[node name="HazardE" type="Node3D" parent="Rooms/EngineeringAccess"]
+script = ExtResource("r7")
+position = Vector3(1.05, 0, 0)
+kind = "hazard_band"
+length = 14
+
+[node name="SteamA" type="Node3D" parent="Rooms/EngineeringAccess"]
+script = ExtResource("r7")
+position = Vector3(-1.3, 0.2, -3)
+kind = "steam_vent"
+
+[node name="SteamB" type="Node3D" parent="Rooms/EngineeringAccess"]
+script = ExtResource("r7")
+position = Vector3(1.3, 0.2, 3)
+kind = "steam_vent"
+
+[node name="SignSteam" type="Node3D" parent="Rooms/EngineeringAccess"]
+script = ExtResource("r7")
+position = Vector3(1.58, 2, -5)
+kind = "sign"
+rotation_degrees = Vector3(0, -90, 0)
+text = "CAUTION\nSTEAM / HIGH TEMPERATURE"
+color = Color(1, 0.6, 0.15, 1)
+
+[node name="MaintenanceTerminal" type="StaticBody3D" parent="Rooms/EngineeringAccess"]
+script = ExtResource("r10")
+position = Vector3(-1.5, 0, 1)
+kind = "terminal"
+interaction_id = &"engineering_terminal"
+prompt_text = "Read maintenance log"
+rotation_degrees = Vector3(0, 90, 0)
+
+[node name="SteamHiss" type="AudioStreamPlayer3D" parent="Rooms/EngineeringAccess"]
+script = ExtResource("r9")
+position = Vector3(-1.3, 0.8, -3)
+sound = &"vent_loop"
+emitter_volume_db = -8
+range_m = 10
+
+[node name="nav_bridge" type="Marker3D" parent="Nav"]
+script = ExtResource("r11")
+position = Vector3(0, 1.6, -27)
+target_id = &"nav_bridge"
+display_name = "COMMAND BRIDGE"
+
+[node name="nav_bridge_terminal" type="Marker3D" parent="Nav"]
+script = ExtResource("r11")
+position = Vector3(3.2, 1.5, -32.4)
+target_id = &"nav_bridge_terminal"
+display_name = "STATUS TERMINAL"
+
+[node name="nav_quarters" type="Marker3D" parent="Nav"]
+script = ExtResource("r11")
+position = Vector3(-7.5, 1.6, -8)
+target_id = &"nav_quarters"
+display_name = "CREW QUARTERS"
+
+[node name="nav_storage" type="Marker3D" parent="Nav"]
+script = ExtResource("r11")
+position = Vector3(7.5, 1.6, 4)
+target_id = &"nav_storage"
+display_name = "SUPPLY ROOM"
+
+[node name="nav_engineering" type="Marker3D" parent="Nav"]
+script = ExtResource("r11")
+position = Vector3(0, 1.6, 42)
+target_id = &"nav_engineering"
+display_name = "ENGINEERING ACCESS"
+
+[node name="nav_engine_core" type="Marker3D" parent="Nav"]
+script = ExtResource("r11")
+position = Vector3(0, 1.6, 49.5)
+target_id = &"nav_engine_core"
+display_name = "ENGINE CORE DOOR"
+
+[node name="Player" parent="." instance=ExtResource("r12")]
+position = Vector3(0, 0.05, 13)
+
+[node name="HUD" parent="." instance=ExtResource("r13")]

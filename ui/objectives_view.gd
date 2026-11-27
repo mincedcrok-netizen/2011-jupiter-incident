@@ -38,7 +38,7 @@ func refresh() -> void:
 	_box.add_child(RetroStyle.label("OBJECTIVES", 13, RetroStyle.DIM))
 	for o in all.slice(maxi(0, all.size() - MAX_SHOWN)):
 		var done: bool = o["completed"]
-		var l := RetroStyle.label("%s %s" % ["[x]" if done else "[ ]", o["text"]], 16,
+		var l := RetroStyle.label("%s %s" % ["[x]" if done else "[ ]", NarrativeText.resolve(o["text"])], 16,
 			RetroStyle.DIM if done else RetroStyle.ACCENT)
 		l.set_meta("objective", true)
 		_box.add_child(l)

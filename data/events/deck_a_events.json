@@ -1,0 +1,391 @@
+[
+	{
+		"id": "deck_a_enter",
+		"canon": "proposed",
+		"trigger": {
+			"type": "scene_change_completed",
+			"match": {
+				"path": "res://scenes/ship/deck_a.tscn"
+			}
+		},
+		"actions": [
+			{
+				"type": "set_objective",
+				"id": "reach_bridge",
+				"text": "Reach the Command Bridge at the north end of the main corridor.",
+				"target": "nav_bridge"
+			},
+			{
+				"type": "notify",
+				"text": "DECK A: MAIN CORRIDOR"
+			}
+		]
+	},
+	{
+		"id": "deck_a_bridge_reached",
+		"canon": "proposed",
+		"trigger": {
+			"type": "area_entered",
+			"match": {
+				"trigger_id": "room_bridge"
+			}
+		},
+		"requires": [
+			"objective_added:reach_bridge"
+		],
+		"actions": [
+			{
+				"type": "complete_objective",
+				"id": "reach_bridge"
+			},
+			{
+				"type": "set_objective",
+				"id": "check_terminal",
+				"text": "Check the bridge status terminal.",
+				"target": "nav_bridge_terminal"
+			}
+		]
+	},
+	{
+		"id": "deck_a_terminal",
+		"canon": "proposed",
+		"once": false,
+		"trigger": {
+			"type": "interacted",
+			"match": {
+				"interaction_id": "bridge_status_terminal"
+			}
+		},
+		"actions": [
+			{
+				"type": "start_dialogue",
+				"id": "deck_a_bridge_status"
+			}
+		]
+	},
+	{
+		"id": "deck_a_terminal_done",
+		"canon": "proposed",
+		"trigger": {
+			"type": "dialogue_ended",
+			"match": {
+				"id": "deck_a_bridge_status"
+			}
+		},
+		"requires": [
+			"objective_added:check_terminal",
+			"door_unlocked:section_b"
+		],
+		"actions": [
+			{
+				"type": "complete_objective",
+				"id": "check_terminal"
+			},
+			{
+				"type": "set_objective",
+				"id": "search_quarters",
+				"text": "Search the crew quarters.",
+				"target": "nav_quarters"
+			}
+		]
+	},
+	{
+		"id": "deck_a_flight_console",
+		"canon": "proposed",
+		"trigger": {
+			"type": "interacted",
+			"match": {
+				"interaction_id": "bridge_flight_console"
+			}
+		},
+		"actions": [
+			{
+				"type": "open_document",
+				"id": "flight_log_fragment"
+			}
+		]
+	},
+	{
+		"id": "deck_a_black_box",
+		"canon": "proposed",
+		"trigger": {
+			"type": "interacted",
+			"match": {
+				"interaction_id": "bridge_black_box"
+			}
+		},
+		"actions": [
+			{
+				"type": "open_recording",
+				"id": "black_box_0811a"
+			}
+		]
+	},
+	{
+		"id": "deck_a_quarters_reached",
+		"canon": "proposed",
+		"trigger": {
+			"type": "area_entered",
+			"match": {
+				"trigger_id": "room_quarters"
+			}
+		},
+		"requires": [
+			"objective_added:search_quarters"
+		],
+		"actions": [
+			{
+				"type": "complete_objective",
+				"id": "search_quarters"
+			},
+			{
+				"type": "set_objective",
+				"id": "check_supply",
+				"text": "Check the supply room.",
+				"target": "nav_storage"
+			}
+		]
+	},
+	{
+		"id": "deck_a_locker_commander",
+		"canon": "proposed",
+		"trigger": {
+			"type": "interacted",
+			"match": {
+				"interaction_id": "quarters_locker_commander"
+			}
+		},
+		"actions": [
+			{
+				"type": "open_document",
+				"id": "crew_note_commander"
+			}
+		]
+	},
+	{
+		"id": "deck_a_locker_scout",
+		"canon": "proposed",
+		"trigger": {
+			"type": "interacted",
+			"match": {
+				"interaction_id": "quarters_locker_scout"
+			}
+		},
+		"actions": [
+			{
+				"type": "open_document",
+				"id": "crew_note_scout"
+			}
+		]
+	},
+	{
+		"id": "deck_a_locker_pilot",
+		"canon": "proposed",
+		"trigger": {
+			"type": "interacted",
+			"match": {
+				"interaction_id": "quarters_locker_pilot"
+			}
+		},
+		"actions": [
+			{
+				"type": "open_document",
+				"id": "crew_note_pilot"
+			}
+		]
+	},
+	{
+		"id": "deck_a_locker_quartermaster",
+		"canon": "proposed",
+		"trigger": {
+			"type": "interacted",
+			"match": {
+				"interaction_id": "quarters_locker_quartermaster"
+			}
+		},
+		"actions": [
+			{
+				"type": "open_document",
+				"id": "crew_note_quartermaster"
+			}
+		]
+	},
+	{
+		"id": "deck_a_radio",
+		"canon": "proposed",
+		"trigger": {
+			"type": "interacted",
+			"match": {
+				"interaction_id": "quarters_radio"
+			}
+		},
+		"actions": [
+			{
+				"type": "open_recording",
+				"id": "crew_cassette_livestream"
+			}
+		]
+	},
+	{
+		"id": "deck_a_storage_reached",
+		"canon": "proposed",
+		"trigger": {
+			"type": "area_entered",
+			"match": {
+				"trigger_id": "room_storage"
+			}
+		},
+		"requires": [
+			"objective_added:check_supply"
+		],
+		"actions": [
+			{
+				"type": "complete_objective",
+				"id": "check_supply"
+			},
+			{
+				"type": "set_objective",
+				"id": "inspect_engineering",
+				"text": "Inspect the engineering access corridor, beyond Section B.",
+				"target": "nav_engineering"
+			}
+		]
+	},
+	{
+		"id": "deck_a_manifest",
+		"canon": "proposed",
+		"trigger": {
+			"type": "interacted",
+			"match": {
+				"interaction_id": "storage_manifest_terminal"
+			}
+		},
+		"actions": [
+			{
+				"type": "open_document",
+				"id": "supply_manifest"
+			}
+		]
+	},
+	{
+		"id": "deck_a_pod_checklist",
+		"canon": "proposed",
+		"trigger": {
+			"type": "interacted",
+			"match": {
+				"interaction_id": "storage_pod_checklist"
+			}
+		},
+		"actions": [
+			{
+				"type": "open_document",
+				"id": "pod_provisioning_checklist"
+			}
+		]
+	},
+	{
+		"id": "deck_a_battery_crate",
+		"canon": "proposed",
+		"trigger": {
+			"type": "interacted",
+			"match": {
+				"interaction_id": "storage_battery_crate"
+			}
+		},
+		"actions": [
+			{
+				"type": "notify",
+				"text": "Four sealed battery cells. (Collecting items arrives in a later phase.)"
+			}
+		]
+	},
+	{
+		"id": "deck_a_damaged_entered",
+		"canon": "proposed",
+		"trigger": {
+			"type": "area_entered",
+			"match": {
+				"trigger_id": "room_damaged"
+			}
+		},
+		"actions": [
+			{
+				"type": "notify",
+				"text": "SECTION B: STRUCTURAL DAMAGE. WATCH YOUR STEP."
+			}
+		]
+	},
+	{
+		"id": "deck_a_damaged_terminal",
+		"canon": "proposed",
+		"trigger": {
+			"type": "interacted",
+			"match": {
+				"interaction_id": "damaged_terminal"
+			}
+		},
+		"actions": [
+			{
+				"type": "open_document",
+				"id": "corrupted_incident_report"
+			}
+		]
+	},
+	{
+		"id": "deck_a_shard",
+		"canon": "proposed",
+		"trigger": {
+			"type": "interacted",
+			"match": {
+				"interaction_id": "damaged_shard"
+			}
+		},
+		"actions": [
+			{
+				"type": "notify",
+				"text": "A cold, pyramid-shaped shard of crystalline metal. It hums when you lean close."
+			}
+		]
+	},
+	{
+		"id": "deck_a_engineering_reached",
+		"canon": "proposed",
+		"trigger": {
+			"type": "area_entered",
+			"match": {
+				"trigger_id": "room_engineering"
+			}
+		},
+		"requires": [
+			"objective_added:inspect_engineering"
+		],
+		"actions": [
+			{
+				"type": "complete_objective",
+				"id": "inspect_engineering"
+			},
+			{
+				"type": "set_objective",
+				"id": "engine_core_sealed",
+				"text": "The engine core door is sealed. Nothing more can be done here yet (end of the Phase 3 slice).",
+				"target": "nav_engine_core"
+			}
+		]
+	},
+	{
+		"id": "deck_a_engineering_terminal",
+		"canon": "proposed",
+		"trigger": {
+			"type": "interacted",
+			"match": {
+				"interaction_id": "engineering_terminal"
+			}
+		},
+		"actions": [
+			{
+				"type": "open_document",
+				"id": "engineering_maintenance_log"
+			}
+		]
+	}
+]

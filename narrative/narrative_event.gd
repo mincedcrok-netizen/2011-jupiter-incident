@@ -88,6 +88,11 @@ static func _parse_action(raw: Variant, errors: Array[String], actx: String) -> 
 			errors.append("%s (%s): missing '%s'" % [actx, raw["type"], param])
 			return {}
 		out[param] = raw[param]
+	if raw["type"] == "set_objective" and raw.has("target"):
+		if not NarrativeValidation.is_nonempty_string(raw["target"]):
+			errors.append("%s: set_objective 'target' must be a non-empty string" % actx)
+			return {}
+		out["target"] = raw["target"]
 	if raw["type"] == "set_flag":
 		var v: Variant = raw.get("value", true)
 		if not NarrativeValidation.is_flag_value(v):

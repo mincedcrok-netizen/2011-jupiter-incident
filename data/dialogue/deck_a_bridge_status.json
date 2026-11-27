@@ -1,0 +1,14 @@
+[
+	{"id": "deck_a_bridge_status", "canon": "proposed", "start": "menu", "nodes": {
+		"menu": {"speaker": "system", "text": "U.S.S. APOLLO-MEME  /  BRIDGE STATUS TERMINAL.  Select a report.",
+			"choices": [
+				{"text": "Ship status summary", "next": "ship"},
+				{"text": "Section B report", "next": "section_b"},
+				{"text": "Release Section B emergency lock", "next": "release", "excludes": ["door_unlocked:section_b"]},
+				{"text": "Log out", "next": ""}
+			]},
+		"ship": {"speaker": "system", "text": "HULL: COMPROMISED IN MULTIPLE SECTIONS.  LIFE SUPPORT: PARTIAL.  COMMS: HEAVY INTERFERENCE.  ENGINE CORE: SEALED.  CREW: NOT ALL ACCOUNTED FOR.", "next": "menu"},
+		"section_b": {"speaker": "system", "text": "SECTION B: STRUCTURAL FAILURE.  PRESSURE IRREGULAR.  EMERGENCY LOCK ENGAGED.  Entry not recommended.", "excludes": ["door_unlocked:section_b"], "next": "menu"},
+		"release": {"speaker": "system", "text": "EMERGENCY LOCK RELEASED. SECTION B ACCESSIBLE. CAUTION ADVISED.", "set_flags": {"door_unlocked:section_b": true}, "next": "menu"}
+	}}
+]

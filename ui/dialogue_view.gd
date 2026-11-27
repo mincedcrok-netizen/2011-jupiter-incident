@@ -102,7 +102,7 @@ func _on_node(p: Dictionary) -> void:
 	var ch := NarrativeDatabase.get_character(StringName(speaker))
 	_speaker.text = RetroStyle.character_name(speaker)
 	_speaker.add_theme_color_override("font_color", ch.color if ch != null else RetroStyle.ACCENT)
-	_text.text = str(p.get("text", ""))
+	_text.text = NarrativeText.resolve(str(p.get("text", "")))
 	_text.visible_characters = 0
 	_reveal = 0.0
 	_choice_texts.clear()
